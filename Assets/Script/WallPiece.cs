@@ -4,7 +4,7 @@ using UnityEngine.Rendering;
 
 public class WallPiece : MonoBehaviour
 {
-    public int ownerPlayerID;
+    //public int ownerPlayerID;
 
     private SpriteRenderer SpriteRenderer;
 
@@ -23,18 +23,15 @@ public class WallPiece : MonoBehaviour
     //벽을 클릭하면 마우스를 따라옴
     private void OnMouseDown()
     {
+        if (isPlaced) return;
 
-        if (GameManager.Instance.IsMyTurn(ownerPlayerID))
+        if (!isDragging)
         {
-            if (isPlaced) return;
-
-            if (!isDragging)
-            {
                 isDragging = true;
                 justPicked = true;
                 originalPos = transform.position; //벽을 들어올린 위치 기억
                 Debug.Log("벽 클릭");
-            }
+            
         }
     }
 
