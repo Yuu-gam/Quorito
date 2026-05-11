@@ -1,4 +1,5 @@
 using Unity.Burst.CompilerServices;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class PlayerPiece : MonoBehaviour
@@ -44,13 +45,17 @@ public class PlayerPiece : MonoBehaviour
         Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(targetPos);
         Vector2Int currentGrid = BoardManager.Instance.WorldToGrid(worldMousePos);
 
-        //transform.position = BoardManager.Instance.GridToWorld(currentGrid);
+        //짝수 좌표로 변환
+        Vector2Int snapGrid = new Vector2Int(
+            Mathf.RoundToInt(currentGrid.x / 2f ) * 2, 
+            Mathf.RoundToInt(currentGrid.y / 2f) * 2
+        );
 
-        bool canMove = CanMove(currentGrid);
+        bool canMove = CanMove(snapGrid);
 
         if (canMove)
         {
-            transform.position = BoardManager.Instance.GridToWorld(currentGrid);
+            transform.position = BoardManager.Instance.GridToWorld(snapGrid);
 
             if (SpriteRenderer != null)
             {
@@ -86,7 +91,7 @@ public class PlayerPiece : MonoBehaviour
 
             if (canMove)
             {
-                MoveTo(currentGrid);
+                MoveTo(snapGrid);
             }
             else
             {
@@ -97,9 +102,20 @@ public class PlayerPiece : MonoBehaviour
 
     public void MoveTo(Vector2Int targetGrid)
     {
+        //dataSize에서 말은 짝수 단위로 움직여야함
+        if (targetGrid.x % 2 != 0 || targetGrid.y % 2 != 0) return;
+
+        if (!CanMove(targetGrid))
+        {
+            return;
+        }
+
         isDragging = false;
         transform.position = BoardManager.Instance.GridToWorld(targetGrid);
-        
+
+        //게임 승리 판정
+        GameManager.Instance.IsEnd(this);
+
         //색 원상복구
         if (SpriteRenderer != null)
         {
@@ -108,6 +124,7 @@ public class PlayerPiece : MonoBehaviour
 
         GameManager.Instance.selectedPiece = null;
         GameManager.Instance.IsPlayerAction();
+        Debug.Log($"말 설치 : x({targetGrid.x}), y({targetGrid.y})");
     }
 
     private void CancelDragging()
@@ -127,27 +144,24 @@ public class PlayerPiece : MonoBehaviour
 
     public bool CanMove(Vector2Int targetGrid)
     {
+
         Vector2Int startGrid = BoardManager.Instance.WorldToGrid(originalPos);
 
-        //거리 계산
-        int distance = Mathf.Abs(targetGrid.x - startGrid.x) + Mathf.Abs(targetGrid.y - startGrid.y);
-        
-        //보드의 범위 내에서 이동 가능
-        if(targetGrid.x < 0 || targetGrid.x >= BoardManager.Instance.boardSize || targetGrid.y >= BoardManager.Instance.boardSize)
-        {
-            Debug.Log("보드 범위 밖 이동 불가");
-            return false;
-        }
+        int dx = Mathf.Abs(targetGrid.x - startGrid.x);
+        int dy = Mathf.Abs(targetGrid.y - startGrid.y);
+        int distance = Mathf.Abs(dx) + Mathf.Abs(dy);
 
-        //한 칸씩 이동 가능
-        if (distance != 1)
+        bool isStraightOne = (dx == 2 && dy == 0) || (dx == 0 && dy == 2);
+
+        //한 칸씩 이동 가능, 대각선 이동 불가
+        if (!isStraightOne)
         {
             Debug.Log("이동 범위 초과");
             return false;
         }
 
         //벽 너머로 이동 불가
-        Vector2Int midPoint = new Vector2Int((startGrid.x + targetGrid.x) / 2, (startGrid.y + targetGrid.y) / 2);
+        Vector2Int midPoint = (startGrid + targetGrid) / 2;
         if (BoardManager.Instance.IsBlocked(midPoint.x, midPoint.y))
         {
             Debug.Log("벽 너머로 이동 불가");

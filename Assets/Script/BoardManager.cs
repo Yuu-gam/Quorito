@@ -5,15 +5,16 @@ public class BoardManager : MonoBehaviour
     public static BoardManager Instance;
 
     public Vector2 boardStartPos = new Vector2(-2.65f, -2.65f); //보드 왼쪽 아래 첫 칸 좌표
-    public int boardSize = 19; //벽 포함 보드 데이터 크기
-    public bool[,] gridData;//벽이 있는지 판단
+    public int boardSize = 10; //10^10
 
-    public float gridSize => (Mathf.Abs(boardStartPos.x) * 2f) / (boardSize - 1); //격자 간 거리 계산
+    public int dataSize => boardSize * 2 - 1; //벽+격자 크기
+    public bool[,] gridData; //벽이 있는지 판단
+    public float gridSize => (Mathf.Abs(boardStartPos.x) * 2f) / (dataSize - 1); //격자 간 거리 계산
 
     void Awake()
     {
         Instance = this;
-        gridData = new bool[boardSize, boardSize];
+        gridData = new bool[dataSize, dataSize];
     }
 
     private void Start()
@@ -23,7 +24,6 @@ public class BoardManager : MonoBehaviour
         foreach(var wall in allWalls)
         {
             Vector2Int pos = WorldToGrid(wall.transform.position);
-            PlaceWallData(wall.occupiedOffsets, pos);
         }
     }
 
@@ -56,8 +56,8 @@ public class BoardManager : MonoBehaviour
         int x = Mathf.RoundToInt((worldPos.x - boardStartPos.x) / gridSize);
         int y = Mathf.RoundToInt((worldPos.y - boardStartPos.y) / gridSize);
 
-        x = Mathf.Clamp(x, 0, boardSize - 1);
-        y = Mathf.Clamp(y, 0, boardSize - 1);
+        x = Mathf.Clamp(x, 0, dataSize - 1);
+        y = Mathf.Clamp(y, 0, dataSize - 1);
 
         return new Vector2Int(x, y);
     }
@@ -79,7 +79,7 @@ public class BoardManager : MonoBehaviour
             Vector2Int target = basePos + offset;
 
             //보드 범위 초과
-            if(target.x < 0 || target.x >= boardSize || target.y < 0 || target.y >= boardSize)
+            if(target.x < 0 || target.x >= dataSize || target.y < 0 || target.y >= dataSize)
             {
                 Debug.Log("보드 범위 초과");
                 return false;
@@ -95,24 +95,24 @@ public class BoardManager : MonoBehaviour
         return true;
     }
 
-    public void PlaceWallData(Vector2Int[] offsets, Vector2Int basePos)
+    public void PlaceWallData(Vector2Int[] offsets, Vector2Int currentGrid)
     {
         foreach(var offset in offsets)
         {
-            int targetX = basePos.x + offset.x;
-            int targetY = basePos.y + offset.y;
+            int targetX = currentGrid.x + offset.x;
+            int targetY = currentGrid.y + offset.y;
 
-            if(targetX >= 0 && targetX <= boardSize && targetY >= 0 && targetY <= boardSize)
+            if(targetX >= 0 && targetX < dataSize && targetY >= 0 && targetY < dataSize)
             {
                 gridData[targetX, targetY] = true;
-                //Debug.Log($"벽 데이터 입력: [{targetX}, {targetY}]");
+                Debug.Log($"벽 데이터 입력: [{targetX}, {targetY}]");
             }            
         }
     }
 
     public bool IsBlocked(int x, int y)
     {
-        if (x < 0 || y < 0 || x >= boardSize || y >= boardSize) return true;
+        if (x < 0 || y < 0 || x >= dataSize || y >= dataSize) return true;
 
         return gridData[x, y];
     }

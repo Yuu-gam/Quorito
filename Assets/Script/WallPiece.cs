@@ -45,9 +45,16 @@ public class WallPiece : MonoBehaviour
         Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(targetPos);
         Vector2Int currentGrid = BoardManager.Instance.WorldToGrid(worldMousePos);
 
-        transform.position = AdjustPos(currentGrid);
+        //홀수 좌표로 변환
+        Vector2Int snapGrid = new Vector2Int(
+            Mathf.RoundToInt(currentGrid.x / 2f ) * 2 + 1,
+            Mathf.RoundToInt(currentGrid.y / 2f) * 2 + 1
+        );
 
-        bool canPlace = BoardManager.Instance.CanPlaceWall(occupiedOffsets, currentGrid);
+        //transform.position = AdjustPos(snapGrid);
+        transform.position = BoardManager.Instance.GridToWorld(snapGrid);
+
+        bool canPlace = BoardManager.Instance.CanPlaceWall(occupiedOffsets, snapGrid);
 
         //설치 가능 여부에 따른 색 변경
         if (SpriteRenderer != null)
@@ -66,6 +73,13 @@ public class WallPiece : MonoBehaviour
         if(Input.GetMouseButtonDown(1))
         {
             transform.Rotate(0, 0, -90f);
+
+            for (int i = 0; i < occupiedOffsets.Length; i++)
+            {
+                int x = occupiedOffsets[i].x;
+                int y = occupiedOffsets[i].y;
+                occupiedOffsets[i] = new Vector2Int(y, -x);
+            }
         }
 
         //좌클릭 시 설치
@@ -80,7 +94,7 @@ public class WallPiece : MonoBehaviour
 
             if (canPlace)
             {
-                PlaceWall(currentGrid);
+                PlaceWall(snapGrid);
             }
             else
             {
@@ -100,9 +114,9 @@ public class WallPiece : MonoBehaviour
         int width = Mathf.RoundToInt(spriteSize.x / gridSize);
         int height = Mathf.RoundToInt(spriteSize.y / gridSize);
 
-        //짝수일 경우 0.5만큼 이동
-        if (width % 2 == 0) conPos.x += gridSize * 0.5f;
-        if (height % 2 == 0) conPos.y += gridSize * 0.5f;
+        //짝수일 경우 이동
+        if (width % 2 == 0) conPos.x += gridSize;
+        if (height % 2 == 0) conPos.y += gridSize;
 
         return conPos;
     }
@@ -122,7 +136,7 @@ public class WallPiece : MonoBehaviour
         Debug.Log("벽 설치 취소");
     }
 
-    public void PlaceWall(Vector2Int baseGridPos)
+    public void PlaceWall(Vector2Int currentGrid)
     {
         isPlaced = true;
         isDragging = false;
@@ -133,7 +147,7 @@ public class WallPiece : MonoBehaviour
             SpriteRenderer.color = Color.white;
         }
 
-        BoardManager.Instance.PlaceWallData(occupiedOffsets, baseGridPos);
+        BoardManager.Instance.PlaceWallData(occupiedOffsets, currentGrid);
         GameManager.Instance.IsPlayerAction();
     }
 }
