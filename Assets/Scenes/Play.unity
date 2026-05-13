@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 366224227}
   - component: {fileID: 366224230}
   - component: {fileID: 366224229}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall_10
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -441,7 +441,7 @@ GameObject:
   - component: {fileID: 535717127}
   - component: {fileID: 535717130}
   - component: {fileID: 535717129}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall_12
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -597,7 +597,7 @@ GameObject:
   - component: {fileID: 540446343}
   - component: {fileID: 540446345}
   - component: {fileID: 540446346}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -837,7 +837,7 @@ GameObject:
   - component: {fileID: 669458504}
   - component: {fileID: 669458507}
   - component: {fileID: 669458506}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: player_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -912,7 +912,7 @@ Transform:
   m_GameObject: {fileID: 669458503}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.3, y: -2.65, z: -1}
+  m_LocalPosition: {x: -0.3, y: -2.65, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -930,7 +930,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cf296cf5438b37469c6e4f653e99a75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerPiece
-  ownerPlayerID: 1
+  ownerPlayerID: 0
+  justPicked: 0
 --- !u!58 &669458507
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -1091,7 +1092,7 @@ GameObject:
   - component: {fileID: 777480436}
   - component: {fileID: 777480439}
   - component: {fileID: 777480438}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall_8
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1247,7 +1248,7 @@ GameObject:
   - component: {fileID: 914836547}
   - component: {fileID: 914836550}
   - component: {fileID: 914836549}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1404,7 +1405,7 @@ GameObject:
   - component: {fileID: 918563810}
   - component: {fileID: 918563809}
   - component: {fileID: 918563811}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: grid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1543,8 +1544,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d62a41295b0738c4b97b5a84259ae156, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BoardScaner
-  boardStartPos: {x: -2.65, y: -2.65}
   boardSize: 10
+  gridSize: 0
+  boardStartPos: {x: -2.65, y: -2.65}
 --- !u!1 &1123935231
 GameObject:
   m_ObjectHideFlags: 0
@@ -1557,7 +1559,7 @@ GameObject:
   - component: {fileID: 1123935232}
   - component: {fileID: 1123935235}
   - component: {fileID: 1123935234}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall_9
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1713,7 +1715,7 @@ GameObject:
   - component: {fileID: 1218546811}
   - component: {fileID: 1218546814}
   - component: {fileID: 1218546813}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall_5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1869,7 +1871,7 @@ GameObject:
   - component: {fileID: 1368756049}
   - component: {fileID: 1368756052}
   - component: {fileID: 1368756051}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall_7
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2025,7 +2027,7 @@ GameObject:
   - component: {fileID: 1389289768}
   - component: {fileID: 1389289770}
   - component: {fileID: 1389289771}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: player_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2154,7 +2156,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cf296cf5438b37469c6e4f653e99a75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerPiece
-  ownerPlayerID: 2
+  ownerPlayerID: 1
+  justPicked: 0
 --- !u!1 &1404490785
 GameObject:
   m_ObjectHideFlags: 0
@@ -2199,7 +2202,7 @@ GameObject:
   - component: {fileID: 1547992871}
   - component: {fileID: 1547992874}
   - component: {fileID: 1547992873}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall_11
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2355,7 +2358,7 @@ GameObject:
   - component: {fileID: 1571059054}
   - component: {fileID: 1571059057}
   - component: {fileID: 1571059056}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2554,7 +2557,7 @@ GameObject:
   - component: {fileID: 1701734708}
   - component: {fileID: 1701734711}
   - component: {fileID: 1701734710}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall_6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2727,13 +2730,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dc0dbe96782b284892c6be1048ab04a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  players:
+  - ownerID: 0
+    targetY: 0
+    currentGridPos: {x: 0, y: 0}
+    playerPiece: {fileID: 0}
+  - ownerID: 0
+    targetY: 0
+    currentGridPos: {x: 0, y: 0}
+    playerPiece: {fileID: 0}
+  player1:
+    ownerID: 0
+    targetY: 0
+    currentGridPos: {x: 0, y: 0}
+    playerPiece: {fileID: 0}
+  player2:
+    ownerID: 0
+    targetY: 0
+    currentGridPos: {x: 0, y: 0}
+    playerPiece: {fileID: 0}
   currentState: 0
-  Player1:
-    wallPrefabs: []
-    player: {fileID: 0}
-  Player2:
-    wallPrefabs: []
-    player: {fileID: 0}
   hasActed: 0
   selectedPiece: {fileID: 0}
   turnCount: 0
@@ -2764,7 +2780,7 @@ GameObject:
   - component: {fileID: 1921111221}
   - component: {fileID: 1921111224}
   - component: {fileID: 1921111223}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}

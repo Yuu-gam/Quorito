@@ -1,38 +1,23 @@
 using Unity.Burst.CompilerServices;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerPiece : MonoBehaviour
 {
     public int ownerPlayerID;
 
-    //public static PlayerPiece selectedPiece; //선택된 말
     private SpriteRenderer SpriteRenderer;
     private Vector3 originalPos;
+    private Vector2Int startGrid;
 
     private bool isDragging = false;
-    private bool justPicked = false;
+    public bool justPicked = false;
 
 
     private void Awake()
     {
         SpriteRenderer = GetComponent<SpriteRenderer>();
-    }
-
-    void OnMouseDown()
-    {
-        if (GameManager.Instance.IsMyTurn(ownerPlayerID))
-        {
-            if (!isDragging)
-            {
-                isDragging = true;
-                justPicked = true;
-                originalPos = transform.position;
-
-                GameManager.Instance.selectedPiece = this.gameObject;
-                Debug.Log("말 클릭");
-            }
-        }
     }
 
     private void Update()
@@ -43,23 +28,25 @@ public class PlayerPiece : MonoBehaviour
         Vector3 targetPos = Input.mousePosition;
         targetPos.z = 10f;
         Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(targetPos);
-        Vector2Int currentGrid = BoardManager.Instance.WorldToGrid(worldMousePos);
 
-        //짝수 좌표로 변환
+        //홀수 좌표로 변환
+        float rawX = (worldMousePos.x - BoardManager.Instance.boardStartPos.x) / BoardManager.Instance.gridSize;
+        float rawY = (worldMousePos.y - BoardManager.Instance.boardStartPos.y) / BoardManager.Instance.gridSize;
+
         Vector2Int snapGrid = new Vector2Int(
-            Mathf.RoundToInt(currentGrid.x / 2f ) * 2, 
-            Mathf.RoundToInt(currentGrid.y / 2f) * 2
-        );
+            Mathf.FloorToInt(rawX / 2f ) * 2 + 1, 
+            Mathf.FloorToInt(rawY / 2f) * 2 + 1);
 
-        bool canMove = CanMove(snapGrid);
 
-        if (canMove)
+        bool canPlace = BoardManager.Instance.CanPlacePiece(ownerPlayerID, snapGrid);
+
+        if (canPlace)
         {
             transform.position = BoardManager.Instance.GridToWorld(snapGrid);
 
             if (SpriteRenderer != null)
             {
-                SpriteRenderer.color = canMove ? new Color(0, 1, 0, 0.5f) : new Color(1, 0, 0, 0.5f);
+                SpriteRenderer.color = canPlace ? new Color(0, 1, 0, 0.5f) : new Color(1, 0, 0, 0.5f);
             }
         }
         else
@@ -68,7 +55,7 @@ public class PlayerPiece : MonoBehaviour
 
             if (SpriteRenderer != null)
             {
-                SpriteRenderer.color = canMove ? new Color(1, 0, 0, 0.5f) : new Color(1, 0, 0, 0.5f);
+                SpriteRenderer.color = canPlace ? new Color(1, 0, 0, 0.5f) : new Color(1, 0, 0, 0.5f);
             }
         }
 
@@ -89,42 +76,15 @@ public class PlayerPiece : MonoBehaviour
                 return;
             }
 
-            if (canMove)
+            if (canPlace)
             {
-                MoveTo(snapGrid);
+                PlacePiece(ownerPlayerID, snapGrid);
             }
             else
             {
                 Debug.Log("설치 실패");
             }
         }
-    }
-
-    public void MoveTo(Vector2Int targetGrid)
-    {
-        //dataSize에서 말은 짝수 단위로 움직여야함
-        if (targetGrid.x % 2 != 0 || targetGrid.y % 2 != 0) return;
-
-        if (!CanMove(targetGrid))
-        {
-            return;
-        }
-
-        isDragging = false;
-        transform.position = BoardManager.Instance.GridToWorld(targetGrid);
-
-        //게임 승리 판정
-        GameManager.Instance.IsEnd(this);
-
-        //색 원상복구
-        if (SpriteRenderer != null)
-        {
-            SpriteRenderer.color = Color.white;
-        }
-
-        GameManager.Instance.selectedPiece = null;
-        GameManager.Instance.IsPlayerAction();
-        Debug.Log($"말 설치 : x({targetGrid.x}), y({targetGrid.y})");
     }
 
     private void CancelDragging()
@@ -142,35 +102,51 @@ public class PlayerPiece : MonoBehaviour
         GameManager.Instance.selectedPiece = null;
     }
 
-    public bool CanMove(Vector2Int targetGrid)
+
+    public void PickUp()
     {
-
-        Vector2Int startGrid = BoardManager.Instance.WorldToGrid(originalPos);
-
-        int dx = Mathf.Abs(targetGrid.x - startGrid.x);
-        int dy = Mathf.Abs(targetGrid.y - startGrid.y);
-        int distance = Mathf.Abs(dx) + Mathf.Abs(dy);
-
-        bool isStraightOne = (dx == 2 && dy == 0) || (dx == 0 && dy == 2);
-
-        //한 칸씩 이동 가능, 대각선 이동 불가
-        if (!isStraightOne)
+        if (!isDragging)
         {
-            Debug.Log("이동 범위 초과");
-            return false;
+            isDragging = true;
+            justPicked = true;
+            originalPos = transform.position;
+            startGrid = BoardManager.Instance.WorldToGrid(originalPos);
+
+            GameManager.Instance.selectedPiece = this.gameObject;
+            Debug.Log($"말 클릭: {startGrid}");
+        }
+    }
+
+    public void PlacePiece(int id, Vector2Int targetGrid)
+    {
+        if(!BoardManager.Instance.CanPlacePiece(ownerPlayerID, targetGrid))
+        {
+            CancelDragging();
+            return;
         }
 
-        //벽 너머로 이동 불가
-        Vector2Int midPoint = (startGrid + targetGrid) / 2;
-        if (BoardManager.Instance.IsBlocked(midPoint.x, midPoint.y))
+        //dataSize에서 말은 홀수 좌표
+        if (targetGrid.x % 2 == 0 || targetGrid.y % 2 == 0) return;
+
+        BoardManager.Instance.UpdatePieceData(startGrid, targetGrid);
+        isDragging = false;
+        transform.position = BoardManager.Instance.GridToWorld(targetGrid);
+
+        //게임 승리 판정
+        GameManager.Instance.IsEnd(ownerPlayerID, targetGrid);
+
+        //색 원상복구
+        if (SpriteRenderer != null)
         {
-            Debug.Log("벽 너머로 이동 불가");
-            return false;
+            SpriteRenderer.color = Color.white;
         }
 
-        //상대방 말 점프
-    
-        return true;
+        //위치값 업데이트
+        GameManager.Instance.players[id].currentGridPos = targetGrid;
+
+        GameManager.Instance.selectedPiece = null;
+        GameManager.Instance.EndTurn();
+        Debug.Log($"말 설치 : x({targetGrid.x}), y({targetGrid.y})");
     }
 }
 

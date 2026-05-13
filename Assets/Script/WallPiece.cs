@@ -43,15 +43,16 @@ public class WallPiece : MonoBehaviour
         Vector3 targetPos = Input.mousePosition;
         targetPos.z = 10f;
         Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(targetPos);
-        Vector2Int currentGrid = BoardManager.Instance.WorldToGrid(worldMousePos);
 
-        //홀수 좌표로 변환
+        //짝수 좌표로 변환
+        float rawX = (worldMousePos.x - BoardManager.Instance.boardStartPos.x) / BoardManager.Instance.gridSize;
+        float rawY = (worldMousePos.y - BoardManager.Instance.boardStartPos.y) / BoardManager.Instance.gridSize;
+
         Vector2Int snapGrid = new Vector2Int(
-            Mathf.RoundToInt(currentGrid.x / 2f ) * 2 + 1,
-            Mathf.RoundToInt(currentGrid.y / 2f) * 2 + 1
+            Mathf.FloorToInt(rawX / 2f ) * 2,
+            Mathf.FloorToInt(rawY / 2f) * 2
         );
 
-        //transform.position = AdjustPos(snapGrid);
         transform.position = BoardManager.Instance.GridToWorld(snapGrid);
 
         bool canPlace = BoardManager.Instance.CanPlaceWall(occupiedOffsets, snapGrid);
@@ -103,24 +104,6 @@ public class WallPiece : MonoBehaviour
         }
     }
 
-    //차지하는 칸의 개수가 짝수일 때, 오프셋을 더하여 계산
-    private Vector3 AdjustPos(Vector2Int gridPos)
-    {
-        Vector3 conPos = BoardManager.Instance.GridToWorld(gridPos);
-        float gridSize = BoardManager.Instance.gridSize;
-
-        //벽의 월드 크기를 격자 수로 변환 및 계산
-        Vector3 spriteSize = SpriteRenderer.bounds.size;
-        int width = Mathf.RoundToInt(spriteSize.x / gridSize);
-        int height = Mathf.RoundToInt(spriteSize.y / gridSize);
-
-        //짝수일 경우 이동
-        if (width % 2 == 0) conPos.x += gridSize;
-        if (height % 2 == 0) conPos.y += gridSize;
-
-        return conPos;
-    }
-
     private void CancelDragging()
     {
         isDragging = false;
@@ -148,6 +131,6 @@ public class WallPiece : MonoBehaviour
         }
 
         BoardManager.Instance.PlaceWallData(occupiedOffsets, currentGrid);
-        GameManager.Instance.IsPlayerAction();
+        GameManager.Instance.EndTurn();
     }
 }

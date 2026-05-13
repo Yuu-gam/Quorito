@@ -1,67 +1,71 @@
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+using System.Collections.Generic;
 
 [System.Serializable]
-public class PlayerSet
+public class PlayerData
 {
-    public GameObject[] wallPrefabs;//플레이어가 사용할 벽
-    public GameObject player; //플레이어가 사용할 말
+    public int ownerID;
+    public int targetY; //승리 지점
+    public Vector2Int currentGridPos; //현재 위치
+    public GameObject playerPiece;
 }
 
 public class GameManager: MonoBehaviour
 {
     public static GameManager Instance;
 
-    public enum GameState { Player1, Player2, GameOver }
-    public GameState currentState;
-
-    public PlayerSet Player1;
-    public PlayerSet Player2;
+    public List<PlayerData> players = new List<PlayerData>();
+    public PlayerData player1;
+    public PlayerData player2;
 
     public bool hasActed = false; //행동 여부
     public GameObject selectedPiece;
-    public int turnCount = 0;
 
+    public int turnCount = 0;
+    public int currentTurnID => turnCount % 2;
 
     void Awake()
     {
         Instance = this;
+
+        //플레이어 기본 데이터
+        ResetPlayers();
+        
     }
 
-    private void Start()
+    public void ResetPlayers()
     {
-        ChangeTurn(GameState.Player1); //Player1부터 시작
-    }
+        players.Clear();
 
+        player1 = new PlayerData
+        {
+            ownerID = 0,
+            targetY = BoardManager.Instance.boardSize * 2 - 1,
+            currentGridPos = new Vector2Int(9, 1),
+            playerPiece = GameObject.Find("player_1")
+        };
 
-    //플레이어 행동 이후
-    public void IsPlayerAction()
-    {
-        hasActed = true;
-        EndTurn();
+        player2 = new PlayerData
+        {
+            ownerID = 1,
+            targetY = 1,
+            currentGridPos = new Vector2Int(11, 19),
+            playerPiece = GameObject.Find("player_2")
+        };
+
+        players.Add(player1);
+        players.Add(player2);
     }
 
 
     //턴 변경
     public void EndTurn()
     {
-        if (currentState == GameState.Player1)
-        {
-            ChangeTurn(GameState.Player2);
-        }
-        else if (currentState == GameState.Player2)
-        {
-            ChangeTurn(GameState.Player1);
-        }
-    }
-
-    public void ChangeTurn(GameState newState)
-    {
-        currentState = newState;
-        hasActed = false;
         turnCount++;
-        Debug.Log($"턴 수:{turnCount}, 현재: {currentState}");
+        hasActed = false;
+        Debug.Log($"턴 수:{turnCount}, 현재: Player{currentTurnID + 1}");
     }
 
 
@@ -70,34 +74,25 @@ public class GameManager: MonoBehaviour
     {
         if (hasActed) return false;
 
-        if (currentState == GameState.Player1 && ownerPlayerID == 1) return true;
-        if (currentState == GameState.Player2 && ownerPlayerID == 2) return true;
-
-        return false;
+        return currentTurnID == ownerPlayerID;
     }
 
 
     //게임 끝
     public void EndGame(int winnerID)
     {
-        Debug.Log($"게임 승리자: {winnerID}");
+        Debug.Log($"게임 승리자: Player{winnerID + 1}");
 
         //승리 UI 및 리셋
         ResetGame();
     }
 
     //게임이 끝났는지 판단
-    public void IsEnd(PlayerPiece player)
+    public void IsEnd(int id, Vector2Int currentGrid)
     {
-        Vector2Int currentGrid = BoardManager.Instance.WorldToGrid(player.transform.position);
-
-        if (player.ownerPlayerID == 1 && currentGrid.y == BoardManager.Instance.dataSize - 1)
+        if (currentGrid.y == players[id].targetY)
         {
-            EndGame(1);
-        }
-        else if (player.ownerPlayerID == 2 && currentGrid.y == 0)
-        {
-            EndGame(2);
+            EndGame(id);
         }
     }
 
