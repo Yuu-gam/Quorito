@@ -83,8 +83,15 @@ public class GameManager: MonoBehaviour
     {
         Debug.Log($"게임 승리자: Player{winnerID + 1}");
 
-        //승리 UI 및 리셋
-        ResetGame();
+        //승리자에 따라 다른 게임 결과 창(Scene) 로드
+        if(winnerID == 0)
+        {
+            P1Win();
+        }
+        else
+        {
+            P2Win();
+        }
     }
 
     //게임이 끝났는지 판단
@@ -101,5 +108,16 @@ public class GameManager: MonoBehaviour
     public void ResetGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    //플레이어 1 우승 결과 씬
+    public void P1Win()
+    {
+        SceneManager.LoadScene("Player1Win");
+    }
+    //플레이어 2 우승 결과 씬
+    public void P2Win()
+    {
+        SceneManager.LoadScene("Player2Win");
     }
 }
