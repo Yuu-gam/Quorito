@@ -2,6 +2,8 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using UnityEngine.UI;
+using TMPro;
 
 [System.Serializable]
 public class PlayerData
@@ -26,12 +28,23 @@ public class GameManager: MonoBehaviour
     public int turnCount = 0;
     public int currentTurnID => turnCount % 2;
 
+    [SerializeField] TMP_Text text;
+
     void Awake()
     {
         Instance = this;
 
         //플레이어 기본 데이터
         ResetPlayers();
+    }
+
+    void Update()
+    {
+        if(currentTurnID == 0){
+            text.text = $"Turn : {turnCount}\n<color=#FF6B6B>Player {currentTurnID+1}</color>";    
+        }else{
+            text.text = $"Turn : {turnCount}\n<color=#4CAF50>Player {currentTurnID+1}</color>";
+        }
         
     }
 
