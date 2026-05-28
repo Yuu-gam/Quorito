@@ -1,152 +1,154 @@
-using Unity.Burst.CompilerServices;
-using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerPiece : MonoBehaviour
+namespace Script
 {
-    public int ownerPlayerID;
-
-    private SpriteRenderer SpriteRenderer;
-    private Vector3 originalPos;
-    private Vector2Int startGrid;
-
-    private bool isDragging = false;
-    public bool justPicked = false;
-
-
-    private void Awake()
+    public class PlayerPiece : MonoBehaviour
     {
-        SpriteRenderer = GetComponent<SpriteRenderer>();
-    }
+        [Header("Player Data")]
+        public int playerID;
+        public int targetY; //승리 지점
+        public Vector2Int currentGridPos; //현재 위치
 
-    private void Update()
-    {
-        if (!isDragging) return;
+        private SpriteRenderer SpriteRenderer;
+        private Vector3 originalPos;
+        private Vector2Int startGrid;
 
-        //마우스 좌표
-        Vector3 targetPos = Input.mousePosition;
-        targetPos.z = 10f;
-        Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(targetPos);
+        private bool justPicked = false;
+        private bool isDragging = false;
 
-        //홀수 좌표로 변환
-        float rawX = (worldMousePos.x - BoardManager.Instance.boardStartPos.x) / BoardManager.Instance.gridSize;
-        float rawY = (worldMousePos.y - BoardManager.Instance.boardStartPos.y) / BoardManager.Instance.gridSize;
-
-        Vector2Int snapGrid = new Vector2Int(
-            Mathf.FloorToInt(rawX / 2f ) * 2 + 1, 
-            Mathf.FloorToInt(rawY / 2f) * 2 + 1);
-
-
-        bool canPlace = BoardManager.Instance.CanPlacePiece(ownerPlayerID, snapGrid);
-
-        if (canPlace)
+        private void Awake()
         {
-            transform.position = BoardManager.Instance.GridToWorld(snapGrid);
-
-            if (SpriteRenderer != null)
-            {
-                SpriteRenderer.color = canPlace ? new Color(0, 1, 0, 0.5f) : new Color(1, 0, 0, 0.5f);
-            }
-        }
-        else
-        {
-            transform.position = originalPos;
-
-            if (SpriteRenderer != null)
-            {
-                SpriteRenderer.color = canPlace ? new Color(1, 0, 0, 0.5f) : new Color(1, 0, 0, 0.5f);
-            }
+            SpriteRenderer = GetComponent<SpriteRenderer>();
         }
 
-        //esc키 다운 시 드래그 취소
-        if (Input.GetKeyDown(KeyCode.Escape))
+        private void Update()
         {
-            CancelDragging();
-            return;
-        }
+            if (!isDragging) return;
 
-        //좌클릭 시 설치
-        if (Input.GetMouseButtonDown(0))
-        {
-            //잡고 있는 상태인지 확인
-            if (justPicked)
-            {
-                justPicked = false;
-                return;
-            }
+            //마우스 좌표
+            Vector3 targetPos = Input.mousePosition;
+            targetPos.z = 10f;
+            Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(targetPos);
+            
+            //홀수 좌표로 변환
+            float rawX = (worldMousePos.x - BoardManager.Instance.boardStartPos.x) / BoardManager.Instance.gridSize;
+            float rawY = (worldMousePos.y - BoardManager.Instance.boardStartPos.y) / BoardManager.Instance.gridSize;
+
+            Vector2Int snapGrid = new Vector2Int(
+                Mathf.FloorToInt(rawX / 2f ) * 2 + 1, 
+                Mathf.FloorToInt(rawY / 2f) * 2 + 1);
+
+
+            bool canPlace = BoardManager.Instance.CanPlacePiece(playerID, snapGrid);
 
             if (canPlace)
             {
-                PlacePiece(ownerPlayerID, snapGrid);
+                transform.position = BoardManager.Instance.GridToWorld(snapGrid);
+
+                if (SpriteRenderer)
+                {
+                    SpriteRenderer.color = new Color(0, 1, 0, 0.5f);
+                }
             }
             else
             {
-                Debug.Log("설치 실패");
+                transform.position = originalPos;
+
+                if (SpriteRenderer)
+                {
+                    SpriteRenderer.color = new Color(1, 0, 0, 0.5f);
+                }
+            }
+
+            //esc키 다운 시 드래그 취소
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                CancelDragging();
+                return;
+            }
+
+            //좌클릭 시 설치
+            if (Input.GetMouseButtonDown(0))
+            {
+                //잡고 있는 상태인지 확인
+                if (justPicked)
+                {
+                    justPicked = false;
+                    return;
+                }
+
+                if (canPlace)
+                {
+                    PlacePiece(playerID, snapGrid);
+                }
+                else
+                {
+                    Debug.Log("설치 실패");
+                }
             }
         }
-    }
 
-    private void CancelDragging()
-    {
-        isDragging = false;
-        justPicked = false;
-        transform.position = originalPos;
-
-        //색 원상복구
-        if (SpriteRenderer != null)
+        private void CancelDragging()
         {
-            SpriteRenderer.color = Color.white;
+            isDragging = false;
+            justPicked = false;
+            transform.position = originalPos;
+
+            //색 원상복구
+            if (SpriteRenderer)
+            {
+                SpriteRenderer.color = Color.white;
+            }
+
+            GameManager.Instance.selectedPiece = null;
         }
 
-        GameManager.Instance.selectedPiece = null;
-    }
 
-
-    public void PickUp()
-    {
-        if (!isDragging)
+        public void PickUp()
         {
-            isDragging = true;
-            justPicked = true;
-            originalPos = transform.position;
-            startGrid = BoardManager.Instance.WorldToGrid(originalPos);
+            if (!isDragging)
+            {
+                isDragging = true;
+                justPicked = true;
+                originalPos = transform.position;
+                startGrid = BoardManager.Instance.WorldToGrid(originalPos);
 
-            GameManager.Instance.selectedPiece = this.gameObject;
-            Debug.Log($"말 클릭: {startGrid}");
-        }
-    }
-
-    public void PlacePiece(int id, Vector2Int targetGrid)
-    {
-        if(!BoardManager.Instance.CanPlacePiece(ownerPlayerID, targetGrid))
-        {
-            CancelDragging();
-            return;
+                GameManager.Instance.selectedPiece = this;
+                Debug.Log($"말 클릭: {startGrid}");
+            }
         }
 
-        //dataSize에서 말은 홀수 좌표
-        if (targetGrid.x % 2 == 0 || targetGrid.y % 2 == 0) return;
-
-        BoardManager.Instance.UpdatePieceData(startGrid, targetGrid);
-        isDragging = false;
-        transform.position = BoardManager.Instance.GridToWorld(targetGrid);
-
-        //게임 승리 판정
-        GameManager.Instance.IsEnd(ownerPlayerID, targetGrid);
-
-        //색 원상복구
-        if (SpriteRenderer != null)
+        public void PlacePiece(int id, Vector2Int targetGrid)
         {
-            SpriteRenderer.color = Color.white;
+            if(!BoardManager.Instance.CanPlacePiece(playerID, targetGrid))
+            {
+                CancelDragging();
+                return;
+            }
+
+            //dataSize에서 말은 홀수 좌표
+            if (targetGrid.x % 2 == 0 || targetGrid.y % 2 == 0) return;
+
+            BoardManager.Instance.UpdatePieceData(startGrid, targetGrid);
+            isDragging = false;
+            transform.position = BoardManager.Instance.GridToWorld(targetGrid);
+
+            //게임 승리 판정
+            GameManager.Instance.IsEnd(playerID, targetGrid);
+
+            //색 원상복구
+            if (SpriteRenderer)
+            {
+                SpriteRenderer.color = Color.white;
+            }
+
+            //위치값 업데이트
+            GameManager.Instance.players[id].currentGridPos = targetGrid;
+
+            GameManager.Instance.selectedPiece = null;
+            GameManager.Instance.EndTurn();
+            Debug.Log($"말 설치 : x({targetGrid.x}), y({targetGrid.y})");
         }
-
-        //위치값 업데이트
-        GameManager.Instance.players[id].currentGridPos = targetGrid;
-
-        GameManager.Instance.selectedPiece = null;
-        GameManager.Instance.EndTurn();
-        Debug.Log($"말 설치 : x({targetGrid.x}), y({targetGrid.y})");
     }
 }
 
