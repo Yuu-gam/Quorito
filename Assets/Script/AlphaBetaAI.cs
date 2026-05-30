@@ -5,30 +5,34 @@ using UnityEngine;
 
 namespace Script
 {
-    public class Move
+    public class MoveData
     {
-        public enum MoveType
+        public Vector2Int TargetPosition;
+    }
+
+    public class PieceMoveData : MoveData
+    {
+        public Vector2Int OriginalPosition;
+
+        public PieceMoveData(Vector2Int originalPosition, Vector2Int targetPosition)
         {
-            MovePiece,
-            PlaceWall,
+            Assert.IsTrue(targetPosition.x % 2 == 1 || targetPosition.y % 2 == 1);
+
+            TargetPosition = targetPosition;
+            OriginalPosition = originalPosition;
         }
+    }
 
-        public MoveType Type;
-        public Vector2Int Position;
+    public class WallMoveData : MoveData
+    {
+        public WallData WallData;
 
-        public Move(MoveType type, Vector2Int position)
+        public WallMoveData(WallData wallData, Vector2Int targetPosition)
         {
-            if (type == MoveType.MovePiece)
-            {
-                Assert.IsTrue(position.x % 2 == 1 || position.y % 2 == 1);
-            }
-            else
-            {
-                Assert.IsTrue(position.x % 2 == 0 || position.y % 2 == 0);
-            }
+            Assert.IsTrue(targetPosition.x % 2 == 0 || targetPosition.y % 2 == 0);
             
-            Type = type;
-            Position = position;
+            TargetPosition = targetPosition;
+            WallData = wallData;
         }
     }
 
@@ -41,33 +45,33 @@ namespace Script
 
         private GridData _grid; // 계산용 로컬 그리드
         
-        private char[] _availableWalls = {'F', 'I', 'L', 'N', 'P', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+        private Stack<MoveData> _moveStack = new();
+        
+        // flip: 5 - current
+        private const int Zero = 0;
+        private const int Up = 1;
+        private const int Left = 2;
+        private const int Right = 3;
+        private const int Down = 4;
+        private const int Start = 5;
+        
+        private readonly Vector2Int[] Dirs =
+        {
+            Vector2Int.zero, Vector2Int.up * 2, Vector2Int.left * 2,
+            Vector2Int.right * 2, Vector2Int.down * 2, Vector2Int.one,
+        };
         
         // Return: path length
         int BFS(int playerID, out List<Vector2Int> path)
         {
             GridData grid = BoardManager.Instance.grid;
 
-            // flip: 5 - current
-            const int zero = 0;
-            const int up = 1;
-            const int left = 2;
-            const int right = 3;
-            const int down = 4;
-            const int start = 5;
-        
-            Vector2Int[] dirs =
-            {
-                Vector2Int.zero, Vector2Int.up * 2, Vector2Int.left * 2,
-                Vector2Int.right * 2, Vector2Int.down * 2, Vector2Int.one,
-            };
-
             short[,] cameFrom = new short[GridData.DataSize, GridData.DataSize];
             Queue<Vector2Int> queue = new Queue<Vector2Int>();
 
             Vector2Int currentPos = GameManager.Instance.players[playerID].currentGridPos;
             queue.Enqueue(currentPos);
-            cameFrom[currentPos.x, currentPos.y] = start;
+            cameFrom[currentPos.x, currentPos.y] = Start;
             
             // BFS copied from BoardManager.CanReachGoal
             while (queue.Count > 0)
@@ -80,24 +84,24 @@ namespace Script
                 //상좌우하 탐색
                 for (short i = 1; i <= 4; i++)
                 {
-                    Vector2Int dir = dirs[i];
+                    Vector2Int dir = Dirs[i];
                     Vector2Int next = currentPos + dir; //이동 경로
                     Vector2Int wall = currentPos + (dir / 2); //이동 경로의 벽 좌표
 
                     if (next.x < 0 || next.x >= GridData.DataSize || next.y < 0 || next.y >= GridData.DataSize) continue;
-                    if (cameFrom[next.x, next.y] != zero) continue;
+                    if (cameFrom[next.x, next.y] != Zero) continue;
                     if (grid.Content[wall.x, wall.y] == GridData.CellType.Wall) continue;
                     cameFrom[next.x, next.y] = (short)(5 - i);
                     queue.Enqueue(next);
                 }
             }
             
-            // Path reconstruction
+            // Reconstruct path
             path = new List<Vector2Int>();
-            while (cameFrom[currentPos.x, currentPos.y] != start)
+            while (cameFrom[currentPos.x, currentPos.y] != Start)
             {
                 path.Add(currentPos);
-                currentPos += dirs[cameFrom[currentPos.x, currentPos.y]];
+                currentPos += Dirs[cameFrom[currentPos.x, currentPos.y]];
             }
             
             return path.Count;
@@ -123,14 +127,14 @@ namespace Script
                 return EvaluateBoard(); // 현재 보드 상태 평가
             }
             
-            if (maximizingPlayer == 1)
+            if (maximizingPlayer == 0)
             {
                 int maxEval = int.MinValue;
-                foreach (var move in GetPossibleMoves())
+                foreach (var move in GetPossibleMoves(0))
                 {
-                    MakeMove(_grid, move);
+                    MakeMove(move);
                     int eval = AlphaBeta(alpha, beta, 0, depth - 1);
-                    UndoMove(_grid);
+                    UndoMove();
                     maxEval = Mathf.Max(maxEval, eval);
                     alpha = Mathf.Max(alpha, eval);
                     if (beta <= alpha)
@@ -141,11 +145,11 @@ namespace Script
             else
             {
                 int minEval = int.MaxValue;
-                foreach (var move in GetPossibleMoves())
+                foreach (var move in GetPossibleMoves(1))
                 {
-                    MakeMove(_grid, move);
+                    MakeMove(move);
                     int eval = AlphaBeta(alpha, beta, 1, depth - 1);
-                    UndoMove(_grid);
+                    UndoMove();
                     minEval = Mathf.Min(minEval, eval);
                     beta = Mathf.Min(beta, eval);
                     if (beta <= alpha)
@@ -155,25 +159,81 @@ namespace Script
             }
         }
 
-        private void MakeMove(GridData grid, Move move)
+        private void MakeMove(MoveData move)
         {
-            throw new NotImplementedException();
+            _moveStack.Push(move);
+
+            if (move is PieceMoveData pieceMove)
+            {
+                _grid.MovePieceData(pieceMove.OriginalPosition, pieceMove.TargetPosition);
+            } 
+            else if (move is WallMoveData wallMove)
+            {
+                _grid.PlaceWallData(wallMove.WallData, wallMove.TargetPosition);
+            }
         }
         
-        private void UndoMove(GridData grid)
+        private void UndoMove()
         {
-            throw new NotImplementedException();
+            MoveData move = _moveStack.Pop();
+
+            if (move is PieceMoveData pieceMove)
+            {
+                _grid.MovePieceData(pieceMove.TargetPosition, pieceMove.OriginalPosition);
+            }
+            else if (move is WallMoveData wallMove)
+            {
+                _grid.RemoveWall(wallMove.WallData, wallMove.TargetPosition);
+            }
         }
 
-        private IEnumerable<Move> GetPossibleMoves()
+        private IEnumerable<MoveData> GetPossibleMoves(int playerID)
         {
-            List<Move> moves = new();
-            
+            List<MoveData> moves = new();
+
             // Get possible piece move
+            Vector2Int[] targetPosCandidates =
+            {
+                Dirs[Up], Dirs[Down], Dirs[Left], Dirs[Right],
+                Dirs[Up] * 2, Dirs[Down] * 2, Dirs[Left] * 2, Dirs[Right] * 2,
+                new(2, 2), new(2, -2), new(-2, 2), new(-2, -2)
+            };
+
+            var currentPos = GameManager.Instance.players[playerID].currentGridPos;
             
+            foreach (var pos in targetPosCandidates)
+            {
+                if (_grid.CanMovePieceTo(playerID, pos))
+                    moves.Add(new PieceMoveData(currentPos, pos));
+            }
+
+            Dictionary<char, short> uniqueRotations = new()
+            {
+                { 'F', 4 },
+                { 'I', 2 },
+                { 'L', 4 },
+                { 'N', 4 },
+                { 'P', 4 },
+                { 'T', 4 },
+                { 'U', 4 },
+                { 'V', 4 },
+                { 'W', 4 },
+                { 'X', 1 },
+                { 'Y', 4 },
+                { 'Z', 2 }
+            };
             
             // Get possible wall placements
-            
+            foreach (var wall in _grid.unplacedWalls)
+            {
+                for (int y = 0; y < GridData.DataSize; y += 2)
+                {
+                    for (int x = 0; x < GridData.DataSize; x += 2)
+                    {
+                        //_grid.CanPlaceWall();
+                    }
+                }
+            }
             
             return moves;
         }

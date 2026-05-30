@@ -39,7 +39,7 @@ namespace Script
                 Mathf.FloorToInt(rawY / 2f) * 2 + 1);
 
 
-            bool canPlace = BoardManager.Instance.CanPlacePiece(playerID, snapGrid);
+            bool canPlace = BoardManager.Instance.CanMovePieceTo(playerID, snapGrid);
 
             if (canPlace)
             {
@@ -79,7 +79,7 @@ namespace Script
 
                 if (canPlace)
                 {
-                    PlacePiece(playerID, snapGrid);
+                    OnPiecePlace(playerID, snapGrid);
                 }
                 else
                 {
@@ -118,36 +118,26 @@ namespace Script
             }
         }
 
-        public void PlacePiece(int id, Vector2Int targetGrid)
+        public void OnPiecePlace(int id, Vector2Int targetPos)
         {
-            if(!BoardManager.Instance.CanPlacePiece(playerID, targetGrid))
+            if(!BoardManager.Instance.CanMovePieceTo(playerID, targetPos))
             {
                 CancelDragging();
                 return;
             }
 
             //dataSize에서 말은 홀수 좌표
-            if (targetGrid.x % 2 == 0 || targetGrid.y % 2 == 0) return;
+            if (targetPos.x % 2 == 0 || targetPos.y % 2 == 0) return;
+            
+            BoardManager.Instance.MovePieceTo(id, targetPos);
 
-            BoardManager.Instance.UpdatePieceData(startGrid, targetGrid);
             isDragging = false;
-            transform.position = BoardManager.Instance.GridToWorld(targetGrid);
+            transform.position = BoardManager.Instance.GridToWorld(targetPos);
 
-            //게임 승리 판정
-            GameManager.Instance.IsEnd(playerID, targetGrid);
-
-            //색 원상복구
             if (SpriteRenderer)
             {
                 SpriteRenderer.color = Color.white;
             }
-
-            //위치값 업데이트
-            GameManager.Instance.players[id].currentGridPos = targetGrid;
-
-            GameManager.Instance.selectedPiece = null;
-            GameManager.Instance.EndTurn();
-            Debug.Log($"말 설치 : x({targetGrid.x}), y({targetGrid.y})");
         }
     }
 }

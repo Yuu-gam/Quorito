@@ -361,11 +361,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
-  occupiedOffsets:
-  - {x: 0, y: -1}
-  - {x: 0, y: -3}
-  - {x: 1, y: 0}
-  - {x: 2, y: 1}
+  wallData:
+    pieceChar: 78
+    occupiedOffsets:
+    - {x: 0, y: -1}
+    - {x: 0, y: -3}
+    - {x: 1, y: 0}
+    - {x: 2, y: 1}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -671,11 +673,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
-  occupiedOffsets:
-  - {x: -1, y: 0}
-  - {x: 0, y: 1}
-  - {x: 0, y: -1}
-  - {x: 0, y: -3}
+  wallData:
+    pieceChar: 89
+    occupiedOffsets:
+    - {x: -1, y: 0}
+    - {x: 0, y: 1}
+    - {x: 0, y: -1}
+    - {x: 0, y: -3}
 --- !u!1 &540446342
 GameObject:
   m_ObjectHideFlags: 0
@@ -781,11 +785,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
-  occupiedOffsets:
-  - {x: 0, y: -1}
-  - {x: 0, y: 1}
-  - {x: -1, y: 2}
-  - {x: 1, y: 2}
+  wallData:
+    pieceChar: 84
+    occupiedOffsets:
+    - {x: 0, y: -1}
+    - {x: 0, y: 1}
+    - {x: -1, y: 2}
+    - {x: 1, y: 2}
 --- !u!61 &540446346
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1464,11 +1470,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
-  occupiedOffsets:
-  - {x: -1, y: 2}
-  - {x: 0, y: 1}
-  - {x: 0, y: -1}
-  - {x: 1, y: -2}
+  wallData:
+    pieceChar: 90
+    occupiedOffsets:
+    - {x: -1, y: 2}
+    - {x: 0, y: 1}
+    - {x: 0, y: -1}
+    - {x: 1, y: -2}
 --- !u!1 &914836546
 GameObject:
   m_ObjectHideFlags: 0
@@ -1620,12 +1628,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
-  occupiedOffsets:
-  - {x: 1, y: 0}
-  - {x: 1, y: 2}
-  - {x: 0, y: 1}
-  - {x: 0, y: -1}
-  - {x: 2, y: 1}
+  wallData:
+    pieceChar: 80
+    occupiedOffsets:
+    - {x: 1, y: 0}
+    - {x: 1, y: 2}
+    - {x: 0, y: 1}
+    - {x: 0, y: -1}
+    - {x: 2, y: 1}
 --- !u!1 &918563807
 GameObject:
   m_ObjectHideFlags: 0
@@ -1778,6 +1788,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BoardScaner
   boardSize: 10
+  grid:
+    unplacedWalls: 460049004c004e0050005400550056005700580059005a00
+    placedWalls: 
   gridSize: 0
   boardStartPos: {x: -2.65, y: -2.65}
 --- !u!1 &1039618173
@@ -2007,11 +2020,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
-  occupiedOffsets:
-  - {x: -1, y: 0}
-  - {x: -2, y: 1}
-  - {x: 1, y: 0}
-  - {x: 2, y: 1}
+  wallData:
+    pieceChar: 85
+    occupiedOffsets:
+    - {x: -1, y: 0}
+    - {x: -2, y: 1}
+    - {x: 1, y: 0}
+    - {x: 2, y: 1}
 --- !u!1 &1218546810
 GameObject:
   m_ObjectHideFlags: 0
@@ -2163,11 +2178,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
-  occupiedOffsets:
-  - {x: -1, y: 0}
-  - {x: 0, y: -1}
-  - {x: 0, y: 1}
-  - {x: 1, y: 2}
+  wallData:
+    pieceChar: 70
+    occupiedOffsets:
+    - {x: -1, y: 0}
+    - {x: 0, y: -1}
+    - {x: 0, y: 1}
+    - {x: 1, y: 2}
 --- !u!1 &1365822791
 GameObject:
   m_ObjectHideFlags: 0
@@ -2421,11 +2438,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
-  occupiedOffsets:
-  - {x: 1, y: 0}
-  - {x: -1, y: 0}
-  - {x: 0, y: 1}
-  - {x: 0, y: -1}
+  wallData:
+    pieceChar: 88
+    occupiedOffsets:
+    - {x: 1, y: 0}
+    - {x: -1, y: 0}
+    - {x: 0, y: 1}
+    - {x: 0, y: -1}
 --- !u!1 &1389289767
 GameObject:
   m_ObjectHideFlags: 0
@@ -2756,11 +2775,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
-  occupiedOffsets:
-  - {x: 0, y: 1}
-  - {x: 0, y: 3}
-  - {x: 0, y: -1}
-  - {x: 0, y: -3}
+  wallData:
+    pieceChar: 73
+    occupiedOffsets:
+    - {x: 0, y: 1}
+    - {x: 0, y: 3}
+    - {x: 0, y: -1}
+    - {x: 0, y: -3}
 --- !u!1 &1571059053
 GameObject:
   m_ObjectHideFlags: 0
@@ -2912,11 +2933,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
-  occupiedOffsets:
-  - {x: -1, y: 0}
-  - {x: -2, y: 1}
-  - {x: 0, y: -1}
-  - {x: 1, y: -2}
+  wallData:
+    pieceChar: 87
+    occupiedOffsets:
+    - {x: -1, y: 0}
+    - {x: -2, y: 1}
+    - {x: 0, y: -1}
+    - {x: 1, y: -2}
 --- !u!1 &1700671985
 GameObject:
   m_ObjectHideFlags: 0
@@ -2946,18 +2969,18 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1218546812}
+  - {fileID: 1547992872}
   - {fileID: 1921111222}
+  - {fileID: 366224228}
   - {fileID: 914836548}
   - {fileID: 540446344}
-  - {fileID: 1571059055}
-  - {fileID: 1218546812}
-  - {fileID: 1701734709}
-  - {fileID: 1368756050}
-  - {fileID: 777480437}
   - {fileID: 1123935233}
-  - {fileID: 366224228}
-  - {fileID: 1547992872}
+  - {fileID: 1701734709}
+  - {fileID: 1571059055}
+  - {fileID: 1368756050}
   - {fileID: 535717128}
+  - {fileID: 777480437}
   m_Father: {fileID: 1404490786}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1701734707
@@ -3111,11 +3134,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
-  occupiedOffsets:
-  - {x: 1, y: 0}
-  - {x: 3, y: 0}
-  - {x: 0, y: 1}
-  - {x: 0, y: 3}
+  wallData:
+    pieceChar: 86
+    occupiedOffsets:
+    - {x: 1, y: 0}
+    - {x: 3, y: 0}
+    - {x: 0, y: 1}
+    - {x: 0, y: 3}
 --- !u!1 &1809495097
 GameObject:
   m_ObjectHideFlags: 0
@@ -3317,11 +3342,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
-  occupiedOffsets:
-  - {x: 1, y: 0}
-  - {x: 0, y: 1}
-  - {x: 0, y: 3}
-  - {x: 0, y: 5}
+  wallData:
+    pieceChar: 76
+    occupiedOffsets:
+    - {x: 1, y: 0}
+    - {x: 0, y: 1}
+    - {x: 0, y: 3}
+    - {x: 0, y: 5}
 --- !u!1 &2116627900
 GameObject:
   m_ObjectHideFlags: 0

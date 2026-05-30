@@ -54,30 +54,21 @@ namespace Script
 
             return currentTurnID == ownerPlayerID;
         }
+        
 
-
-        //게임 끝
-        public void EndGame(int winnerID)
+        //게임이 끝났는지 판단
+        public void OnGoalReached(int id, Vector2Int currentGrid)
         {
-            Debug.Log($"게임 승리자: Player{winnerID + 1}");
+            //Debug.Log($"게임 승리자: Player{id}");
 
             //승리자에 따라 다른 게임 결과 창(Scene) 로드
-            if(winnerID == 0)
+            if(id == 0)
             {
                 P1Win();
             }
             else
             {
                 P2Win();
-            }
-        }
-
-        //게임이 끝났는지 판단
-        public void IsEnd(int id, Vector2Int currentGrid)
-        {
-            if (currentGrid.y == players[id].targetY)
-            {
-                EndGame(id);
             }
         }
 

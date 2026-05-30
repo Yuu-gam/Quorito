@@ -8,7 +8,7 @@ namespace Script
 
         private SpriteRenderer SpriteRenderer;
 
-        public Vector2Int[] occupiedOffsets; //벽이 보드에서 차지하는 좌표
+        public WallData wallData;
         private bool isPlaced = false; //설치 상태
         private bool isDragging = false; //드래그 상태
         private bool justPicked = false; //방금 집었는지 확인
@@ -54,7 +54,7 @@ namespace Script
 
             transform.position = BoardManager.Instance.GridToWorld(snapGrid);
 
-            bool canPlace = BoardManager.Instance.CanPlaceWall(occupiedOffsets, snapGrid);
+            bool canPlace = BoardManager.Instance.CanPlaceWall(wallData, snapGrid);
 
             //설치 가능 여부에 따른 색 변경
             if (SpriteRenderer)
@@ -73,13 +73,7 @@ namespace Script
             if(Input.GetMouseButtonDown(1))
             {
                 transform.Rotate(0, 0, -90f);
-
-                for (int i = 0; i < occupiedOffsets.Length; i++)
-                {
-                    int x = occupiedOffsets[i].x;
-                    int y = occupiedOffsets[i].y;
-                    occupiedOffsets[i] = new Vector2Int(y, -x);
-                }
+                wallData.Rotate(1);
             }
 
             //좌클릭 시 설치
@@ -98,7 +92,7 @@ namespace Script
                 }
                 else
                 {
-                    Debug.Log("설치 실패");
+                    //Debug.Log("설치 실패");
                 }
             }
         }
@@ -129,7 +123,7 @@ namespace Script
                 SpriteRenderer.color = Color.white;
             }
 
-            BoardManager.Instance.PlaceWallData(occupiedOffsets, currentGrid);
+            BoardManager.Instance.grid.PlaceWallData(wallData, currentGrid);
             GameManager.Instance.EndTurn();
         }
     }
