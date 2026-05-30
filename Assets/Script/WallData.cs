@@ -24,7 +24,7 @@ namespace Script
 			}
 		}
 		
-		public WallData(char pieceChar)
+		public WallData(char pieceChar, int rotation = 0)
 		{
 			this.pieceChar = pieceChar;
 			switch (pieceChar)
@@ -69,6 +69,8 @@ namespace Script
 					Assert.Fail($"Unknown piece char '{pieceChar}' during WallData construction");
 					break;
 			}
+			
+			Rotate(rotation);
 		}
 	}
 }

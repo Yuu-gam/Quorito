@@ -222,15 +222,38 @@ namespace Script
                 { 'Y', 4 },
                 { 'Z', 2 }
             };
+
+            List<WallData> wallCandidates = new();
+
+            foreach (var wallChar in _grid.unplacedWalls)
+            {
+                switch (uniqueRotations[wallChar])
+                {
+                    case 1:
+                        wallCandidates.Add(new WallData(wallChar));
+                        break;
+                    case 2:
+                        wallCandidates.Add(new WallData(wallChar));
+                        wallCandidates.Add(new WallData(wallChar, 2));
+                        break;
+                    case 4:
+                        wallCandidates.Add(new WallData(wallChar));
+                        wallCandidates.Add(new WallData(wallChar, 1));
+                        wallCandidates.Add(new WallData(wallChar, 2));
+                        wallCandidates.Add(new WallData(wallChar, 3));
+                        break;
+                }
+            }
             
             // Get possible wall placements
-            foreach (var wall in _grid.unplacedWalls)
+            foreach (WallData wallData in wallCandidates)
             {
                 for (int y = 0; y < GridData.DataSize; y += 2)
                 {
                     for (int x = 0; x < GridData.DataSize; x += 2)
                     {
-                        //_grid.CanPlaceWall();
+                        if (_grid.CanPlaceWall(wallData, new Vector2Int(x, y)))
+                            moves.Add(new WallMoveData(wallData,  new Vector2Int(x, y)));
                     }
                 }
             }
