@@ -78,7 +78,7 @@ namespace Script
                 startGrid = BoardManager.Instance.WorldToGrid(originalPos);
 
                 GameManager.Instance.selectedPiece = this;
-                Debug.Log($"말 클릭: {startGrid}");
+                //Debug.Log($"말 클릭: {startGrid}");
             }
         }
 

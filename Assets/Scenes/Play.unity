@@ -2661,7 +2661,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.000000059604645, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -2671,7 +2671,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.28, y: 7.79}
+  m_Size: {x: 1.07, y: 8.62}
   m_EdgeRadius: 0
 --- !u!114 &1547992874
 MonoBehaviour:
@@ -2700,7 +2700,7 @@ GameObject:
   - component: {fileID: 1571059055}
   - component: {fileID: 1571059054}
   - component: {fileID: 1571059057}
-  - component: {fileID: 1571059056}
+  - component: {fileID: 1571059058}
   m_Layer: 7
   m_Name: Wall_W
   m_TagString: Untagged
@@ -2776,14 +2776,30 @@ Transform:
   m_GameObject: {fileID: 1571059053}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.18, y: -0.56, z: 0}
+  m_LocalPosition: {x: -1.1542499, y: -0.55474997, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1700671986}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &1571059056
-BoxCollider2D:
+--- !u!114 &1571059057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1571059053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WallPiece
+  _wallChar: 87
+  wallData:
+    pieceChar: 87
+    _occupiedOffsets: []
+--- !u!60 &1571059058
+PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -2826,24 +2842,19 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 4.1, y: 3.98}
-  m_EdgeRadius: 0
---- !u!114 &1571059057
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1571059053}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WallPiece
-  _wallChar: 87
-  wallData:
-    pieceChar: 87
-    _occupiedOffsets: []
+  m_Points:
+    m_Paths:
+    - - {x: -2.4, y: 2.4}
+      - {x: -2.4, y: -0.4}
+      - {x: -0.39999998, y: -0.4}
+      - {x: -0.4, y: -2.2}
+      - {x: 2.4, y: -2.2}
+      - {x: 2.4, y: -1.4}
+      - {x: 0.6, y: -1.4}
+      - {x: 0.6, y: 0.6}
+      - {x: -1.4, y: 0.6}
+      - {x: -1.4, y: 2.4}
+  m_UseDelaunayMesh: 1
 --- !u!1 &1700671985
 GameObject:
   m_ObjectHideFlags: 0
@@ -2898,7 +2909,7 @@ GameObject:
   - component: {fileID: 1701734709}
   - component: {fileID: 1701734708}
   - component: {fileID: 1701734711}
-  - component: {fileID: 1701734710}
+  - component: {fileID: 1701734712}
   m_Layer: 7
   m_Name: Wall_V
   m_TagString: Untagged
@@ -2980,8 +2991,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1700671986}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &1701734710
-BoxCollider2D:
+--- !u!114 &1701734711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1701734707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WallPiece
+  _wallChar: 86
+  wallData:
+    pieceChar: 86
+    _occupiedOffsets: []
+--- !u!60 &1701734712
+PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3014,7 +3041,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 1.8, y: 1.9}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.045, y: 0.04}
@@ -3024,24 +3051,15 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 4.02, y: 4.1}
-  m_EdgeRadius: 0
---- !u!114 &1701734711
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1701734707}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WallPiece
-  _wallChar: 86
-  wallData:
-    pieceChar: 86
-    _occupiedOffsets: []
+  m_Points:
+    m_Paths:
+    - - {x: -0.6, y: 4.3}
+      - {x: -0.6, y: -0.6}
+      - {x: 4.2, y: -0.6}
+      - {x: 4.2, y: 0.59999996}
+      - {x: 0.6, y: 0.59999996}
+      - {x: 0.6, y: 4.3}
+  m_UseDelaunayMesh: 1
 --- !u!1 &1809495097
 GameObject:
   m_ObjectHideFlags: 0
@@ -3220,7 +3238,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 1, y: 3}
+  m_Offset: {x: 0.89335704, y: 3}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.07, y: 0.025}
@@ -3230,7 +3248,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 2.07, y: 6.12}
+  m_Size: {x: 2.2832856, y: 6.12}
   m_EdgeRadius: 0
 --- !u!114 &1921111224
 MonoBehaviour:
@@ -3278,7 +3296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Script.AlphaBetaAI
   maxDepth: 1
-  logVerbosity: 1
+  logVerbosity: 0
 --- !u!4 &1937505678
 Transform:
   m_ObjectHideFlags: 0

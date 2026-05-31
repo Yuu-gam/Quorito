@@ -31,7 +31,7 @@ namespace Script
                 isDragging = true;
                 justPicked = true;
                 originalPos = transform.position; //벽을 들어올린 위치 기억
-                Debug.Log("벽 클릭");
+                //Debug.Log("벽 클릭");
             }
         }
 
@@ -39,17 +39,19 @@ namespace Script
         {
             if (isPlaced || !isDragging) return;
 
+            float cellSize = BoardManager.Instance.gridSize;
             //마우스 좌표
             Vector3 targetPos = Input.mousePosition;
             targetPos.z = 10f;
             Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(targetPos);
-
+            worldMousePos += new Vector3(cellSize, cellSize, 0f);
+            
             //짝수 좌표로 변환
-            float rawX = (worldMousePos.x - BoardManager.Instance.boardStartPos.x) / BoardManager.Instance.gridSize;
-            float rawY = (worldMousePos.y - BoardManager.Instance.boardStartPos.y) / BoardManager.Instance.gridSize;
+            float rawX = (worldMousePos.x - BoardManager.Instance.boardStartPos.x) / cellSize;
+            float rawY = (worldMousePos.y - BoardManager.Instance.boardStartPos.y) / cellSize;
 
             Vector2Int snapGrid = new Vector2Int(
-                Mathf.FloorToInt(rawX / 2f ) * 2,
+                Mathf.FloorToInt(rawX / 2f) * 2,
                 Mathf.FloorToInt(rawY / 2f) * 2
             );
 

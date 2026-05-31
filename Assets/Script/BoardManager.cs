@@ -11,7 +11,7 @@ namespace Script
         public GridData grid; //해당 좌표에 무엇이 있는지 판단
 
         [HideInInspector]
-        public float gridSize; //격자 간 거리 계산
+        public float gridSize; //세계 좌표 기준 격자 한 칸 크기
 
         [HideInInspector]
         public Vector2 boardStartPos; //보드 왼쪽 아래 꼭짓점 좌표

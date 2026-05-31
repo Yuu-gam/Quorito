@@ -55,7 +55,7 @@ namespace Script
             if (bestMove is PieceMoveData pieceMove)
             {
                 players[currentTurnID].OnPiecePlace(pieceMove.TargetPosition);
-                Debug.Log($"Move player at ({pieceMove.OriginalPosition}) to ({pieceMove.TargetPosition})"); 
+                //Debug.Log($"Move player at ({pieceMove.OriginalPosition}) to ({pieceMove.TargetPosition})"); 
             }
             else if (bestMove is WallMoveData wallMove)
             {
@@ -65,11 +65,11 @@ namespace Script
                     wallPiece.wallData = wallMove.WallData;
                     wallPiece.PlaceWall(wallMove.TargetPosition);
                 }
-                Debug.Log($"Place wall '{wallMove.WallData.pieceChar}-{wallMove.WallData.Rotation}' at  ({wallMove.TargetPosition})"); 
+                //Debug.Log($"Place wall '{wallMove.WallData.pieceChar}-{wallMove.WallData.Rotation}' at  ({wallMove.TargetPosition})"); 
             }
             else
             {
-                Debug.Log("No playable move returned");
+                //Debug.Log("No playable move returned");
             }
             Debug.Log($"eval: {eval}");
         }
