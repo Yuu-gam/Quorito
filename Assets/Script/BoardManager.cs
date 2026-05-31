@@ -71,7 +71,7 @@ namespace Script
                     return;
                 }
                 
-                GameManager.Instance.selectedPiece?.OnPiecePlace(targetGridPos);
+                GameManager.Instance.selectedPiece?.OnPiecePlace(CurrentMouseGrid);
             }
         }
 
