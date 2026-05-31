@@ -218,7 +218,7 @@ namespace Script
             if (targetPos.x < 0 || targetPos.y < 0 ||
                 targetPos.x >= DataSize || targetPos.y >= DataSize) return false;
 
-            //Debug.Log($"Start: {startGrid}, Target: {targetGrid}, dx: {dx}, dy: {dy}");
+            //Debug.Log($"Start: {startPos}, Target: {targetPos}, dx: {dx}, dy: {dy}");
 
 
             //목표에 말이 있다면 이동 불가

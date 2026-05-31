@@ -5,20 +5,20 @@ namespace Script
 {
     public class BoardManager : MonoBehaviour
     {
-        public int boardSize; //10^10
-        
         public static BoardManager Instance;
-        
+
         private float ObjectWidth => GetComponent<Renderer>().bounds.size.x; //실제 보드 크기
     
-        //해당 좌표에 무엇이 있는지 판단
-        public GridData grid;
+        public GridData grid; //해당 좌표에 무엇이 있는지 판단
 
         [HideInInspector]
         public float gridSize; //격자 간 거리 계산
 
         [HideInInspector]
         public Vector2 boardStartPos; //보드 왼쪽 아래 꼭짓점 좌표
+
+        public Vector2Int CurrentMouseGrid { get; private set; } //현재 마우스 좌표는 BoardManager에서만 계산할 것
+
 
         void Awake()
         {
@@ -49,12 +49,21 @@ namespace Script
             int id = GameManager.Instance.currentTurnID;
             PlayerPiece player = GameManager.Instance.players[id];
 
+            Vector2 mousePos = GetMousePos();
+
+            //홀수 좌표로 변환
+            float rawX = (mousePos.x - boardStartPos.x) / gridSize;
+            float rawY = (mousePos.y - boardStartPos.y) / gridSize;
+
+            CurrentMouseGrid = new Vector2Int(
+                Mathf.FloorToInt(rawX / 2f) * 2 + 1,
+                Mathf.FloorToInt(rawY / 2f) * 2 + 1);
+
+
             if (Input.GetMouseButtonDown(0))
             {
-                Vector2 mousePos = GetMousePos();
-                Vector2Int targetGridPos = WorldToGrid(mousePos);
 
-                if (targetGridPos == player.currentGridPos)
+                if (CurrentMouseGrid == player.currentGridPos)
                 {
                     player.PickUp();
                     GameManager.Instance.selectedPiece = player;

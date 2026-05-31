@@ -35,7 +35,7 @@ namespace Script
             }
         }
 
-        private void Update() //벽은 드래그로 구현
+        private void Update()
         {
             if (isPlaced || !isDragging) return;
 
