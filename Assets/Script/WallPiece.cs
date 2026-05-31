@@ -53,6 +53,7 @@ namespace Script
             );
 
             transform.position = BoardManager.Instance.GridToWorld(snapGrid);
+            transform.rotation = Quaternion.Euler(0, 0, -90f * wallData.rotation);
 
             bool canPlace = BoardManager.Instance.CanPlaceWall(wallData, snapGrid);
 
@@ -72,7 +73,6 @@ namespace Script
             //우클릭 시 회전
             if(Input.GetMouseButtonDown(1))
             {
-                transform.Rotate(0, 0, -90f);
                 wallData.Rotate(1);
             }
 
@@ -88,7 +88,7 @@ namespace Script
 
                 if (canPlace)
                 {
-                    PlaceWall(snapGrid);
+                   PlaceWall(snapGrid);
                 }
                 else
                 {
@@ -122,6 +122,9 @@ namespace Script
             {
                 SpriteRenderer.color = Color.white;
             }
+            
+            transform.position = BoardManager.Instance.GridToWorld(currentGrid);
+            transform.rotation = Quaternion.Euler(0, 0, -90f * wallData.rotation);
 
             BoardManager.Instance.grid.PlaceWallData(wallData, currentGrid);
             GameManager.Instance.EndTurn();

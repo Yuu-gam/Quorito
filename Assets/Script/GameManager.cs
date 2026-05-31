@@ -19,9 +19,12 @@ namespace Script
         public int currentTurnID => turnCount % 2;
 
         [SerializeField] private TMP_Text text;
-
+        
         private bool hasActed = false; //행동 여부
 
+        [Header("AI")]
+        [SerializeField] private AlphaBetaAI ai;
+        
         void Awake()
         {
             Instance = this;
@@ -44,6 +47,29 @@ namespace Script
             turnCount++;
             hasActed = false;
             Debug.Log($"턴 수:{turnCount}, 현재: Player{currentTurnID + 1}");
+            
+            // AI test
+            //*
+            if (currentTurnID == 0) return;
+            
+            var eval = ai.AlphaBeta(int.MinValue, int.MaxValue, 1, ai.maxDepth, out var bestMove);
+
+            if (bestMove is PieceMoveData pieceMove)
+            {
+                players[currentTurnID].OnPiecePlace(pieceMove.TargetPosition);
+                Debug.Log($"Move player at ({pieceMove.OriginalPosition}) to ({pieceMove.TargetPosition})"); 
+            }
+            else if (bestMove is WallMoveData wallMove)
+            {
+                BoardManager.Instance.FindWallPiece(wallMove.WallData.pieceChar).PlaceWall(wallMove.TargetPosition);
+                Debug.Log($"Place wall '{wallMove.WallData.pieceChar}' at  ({wallMove.TargetPosition})"); 
+            }
+            else
+            {
+                Debug.Log("No playable move returned");
+            }
+            Debug.Log($"eval: {eval}");
+            //*/    
         }
 
 

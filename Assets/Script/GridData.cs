@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
@@ -18,9 +19,14 @@ namespace Script
 
         public enum CellType { Empty, Wall, Piece }
         public CellType[,] Content;
-        
-        public List<char> unplacedWalls = new(){'F', 'I', 'L', 'N', 'P', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+
+        public List<char> unplacedWalls = new() { 'F', 'I', 'L', 'N', 'P', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
         public List<char> placedWalls = new();
+
+        public int[] targetYs = { 19, 1 };
+        
+        [NonSerialized]
+        public Vector2Int[] piecePositions = { new(9, 1), new(11, 19) };
 
         public GridData()
         {
@@ -36,7 +42,8 @@ namespace Script
             ms.Position = 0;
             var ret = (GridData)formatter.Deserialize(ms);
             ms.Close();
-            
+
+            ret.piecePositions = piecePositions.Clone() as Vector2Int[];
             return ret;
         }
 
@@ -106,8 +113,8 @@ namespace Script
                 Content[basePos.x + offset.x, basePos.y + offset.y] = CellType.Wall;
             }
 
-            bool p0CanGo = CanReachGoal(GameManager.Instance.players[0].currentGridPos, GameManager.Instance.players[0].targetY);
-            bool p1CanGo = CanReachGoal(GameManager.Instance.players[1].currentGridPos, GameManager.Instance.players[1].targetY);
+            bool p0CanGo = CanReachGoal(0);
+            bool p1CanGo = CanReachGoal(1);
 
             foreach(var offset in offsets)
             {
@@ -121,8 +128,11 @@ namespace Script
         
         
         //BFS로 길 탐색
-        public bool CanReachGoal(Vector2Int startPos, int targetY)
+        public bool CanReachGoal(int pieceID)
         {
+            Vector2Int startPos = piecePositions[pieceID];
+            int targetY = targetYs[pieceID];
+                
             bool[,] visited = new bool[DataSize, DataSize];
             Queue<Vector2Int> queue = new Queue<Vector2Int>();
 
@@ -189,15 +199,13 @@ namespace Script
         
         public bool IsPiece(Vector2Int pos)
         {
-            if (pos.x < 0 || pos.y < 0 || pos.x >= DataSize || pos.y >= DataSize) return true;
-
-            return Content[pos.x, pos.y] == CellType.Piece;
+            return piecePositions.Contains(pos);
         }
         
 
         public bool CanMovePieceTo(int pieceID, Vector2Int targetPos)
         {
-            Vector2Int startPos = GameManager.Instance.players[pieceID].currentGridPos;
+            Vector2Int startPos = piecePositions[pieceID];
 
             int dx = targetPos.x - startPos.x;
             int dy = targetPos.y - startPos.y;
@@ -288,10 +296,21 @@ namespace Script
             return false;
         }
 
-        public void MovePieceData(Vector2Int originPos, Vector2Int targetPos)
+        
+        public void MovePieceData(int pieceID, Vector2Int targetPos)
         {
-            Content[originPos.x, originPos.y] = CellType.Empty;
+            Content[piecePositions[pieceID].x, piecePositions[pieceID].y] = CellType.Empty;
             Content[targetPos.x, targetPos.y] = CellType.Piece;
+            
+            piecePositions[pieceID] = targetPos;
+        }
+        
+        
+        public void MovePieceData(Vector2Int originalPos, Vector2Int targetPos)
+        {
+            int pieceID = piecePositions[0] == originalPos ? 0 : 1;
+            
+            MovePieceData(pieceID, targetPos);
         }
     }
 }

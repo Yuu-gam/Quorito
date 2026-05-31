@@ -10,10 +10,12 @@ namespace Script
 		public char pieceChar;
 		
 		public Vector2Int[] occupiedOffsets; // 벽이 보드에서 차지하는 좌표
+		public int rotation;
 
 		// Rotate occupiedOffsets by 90 degrees "amount" times
 		public void Rotate(int amount)
 		{
+			rotation += amount;
 			for (int t = 0; t < amount; t++) {
 				for (int i = 0; i < occupiedOffsets.Length; i++)
 				{

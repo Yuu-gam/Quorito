@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -38,8 +39,8 @@ namespace Script
 
     public class AlphaBetaAI : MonoBehaviour
     {
-        const int MaxDepth = 5; // 탐색 깊이
-
+        [SerializeField] public int maxDepth = 3;
+        
         private List<Vector2Int> _optimalPath0 = new(); // 플레이어 0의 최적 경로
         private List<Vector2Int> _optimalPath1 = new(); // 플레이어 1의 최적 경로
 
@@ -61,15 +62,16 @@ namespace Script
             Vector2Int.right * 2, Vector2Int.down * 2, Vector2Int.one,
         };
         
+        private int _evaluatedMoves;
+        private List<int> _scores = new();
+        
         // Return: path length
-        int BFS(int playerID, out List<Vector2Int> path)
+        private int BFS(int pieceID, out List<Vector2Int> path)
         {
-            GridData grid = BoardManager.Instance.grid;
-
             short[,] cameFrom = new short[GridData.DataSize, GridData.DataSize];
             Queue<Vector2Int> queue = new Queue<Vector2Int>();
 
-            Vector2Int currentPos = GameManager.Instance.players[playerID].currentGridPos;
+            Vector2Int currentPos = _grid.piecePositions[pieceID];
             queue.Enqueue(currentPos);
             cameFrom[currentPos.x, currentPos.y] = Start;
             
@@ -78,8 +80,8 @@ namespace Script
             {
                 currentPos = queue.Dequeue();
 
-                if (currentPos.y == GameManager.Instance.players[playerID].targetY)
-                    break; //목적지 도착
+                if (currentPos.y == _grid.targetYs[pieceID])
+                    break; //목적지
 
                 //상좌우하 탐색
                 for (short i = 1; i <= 4; i++)
@@ -90,7 +92,7 @@ namespace Script
 
                     if (next.x < 0 || next.x >= GridData.DataSize || next.y < 0 || next.y >= GridData.DataSize) continue;
                     if (cameFrom[next.x, next.y] != Zero) continue;
-                    if (grid.Content[wall.x, wall.y] == GridData.CellType.Wall) continue;
+                    if (_grid.Content[wall.x, wall.y] == GridData.CellType.Wall) continue;
                     cameFrom[next.x, next.y] = (short)(5 - i);
                     queue.Enqueue(next);
                 }
@@ -107,20 +109,38 @@ namespace Script
             return path.Count;
         }
 
-        int EvaluateBoard()
+        public int EvaluateBoard()
         {
             // 현재 보드 상태를 평가하여 점수 반환
             int dist0 = BFS(0, out _);
             int dist1 = BFS(1, out _);
             int score = dist1 - dist0; // 플레이어 0이 유리할수록 점수가 높음
-            
+
+            _evaluatedMoves++;
+            _scores.Add(score);
             return score;
         }
 
-        int AlphaBeta(int alpha, int beta, int maximizingPlayer, int depth = MaxDepth)
+        private void LogResult()
         {
-            if (depth == MaxDepth)
+            Debug.Log($"Minimax ended with {_evaluatedMoves} evaluated moves");
+            
+            var sw = new StreamWriter("Assets/Log/scores.txt");
+            sw.WriteLine(string.Join(", ",  _scores));
+            sw.Flush();
+            sw.Close();
+        }
+
+        public int AlphaBeta(int alpha, int beta, int maximizingPlayer, int depth, out MoveData bestMove)
+        {
+            bestMove = null;
+            
+            if (depth == maxDepth)
+            {
                 _grid = BoardManager.Instance.grid.Clone();
+                _evaluatedMoves = 0;
+                _scores.Clear();
+            }
             
             if (depth == 0)
             {
@@ -133,12 +153,21 @@ namespace Script
                 foreach (var move in GetPossibleMoves(0))
                 {
                     MakeMove(move);
-                    int eval = AlphaBeta(alpha, beta, 0, depth - 1);
+                    int eval = AlphaBeta(alpha, beta, 1, depth - 1, out _);
                     UndoMove();
-                    maxEval = Mathf.Max(maxEval, eval);
+                    if (eval > maxEval)
+                    {
+                        maxEval = eval;
+                        bestMove = move;
+                    }
                     alpha = Mathf.Max(alpha, eval);
                     if (beta <= alpha)
                         break; // 베타 컷오프
+                }
+
+                if (depth == maxDepth)
+                {
+                    LogResult();
                 }
                 return maxEval;
             }
@@ -148,12 +177,20 @@ namespace Script
                 foreach (var move in GetPossibleMoves(1))
                 {
                     MakeMove(move);
-                    int eval = AlphaBeta(alpha, beta, 1, depth - 1);
+                    int eval = AlphaBeta(alpha, beta, 0, depth - 1, out _);
                     UndoMove();
-                    minEval = Mathf.Min(minEval, eval);
+                    if (eval < minEval)
+                    {
+                        minEval = eval;
+                        bestMove = move;
+                    }
                     beta = Mathf.Min(beta, eval);
                     if (beta <= alpha)
                         break; // 알파 컷오프
+                }
+                if (depth == maxDepth)
+                {
+                    LogResult();
                 }
                 return minEval;
             }
@@ -192,19 +229,20 @@ namespace Script
             List<MoveData> moves = new();
 
             // Get possible piece move
-            Vector2Int[] targetPosCandidates =
+            Vector2Int[] posOffsetCandidates =
             {
                 Dirs[Up], Dirs[Down], Dirs[Left], Dirs[Right],
                 Dirs[Up] * 2, Dirs[Down] * 2, Dirs[Left] * 2, Dirs[Right] * 2,
                 new(2, 2), new(2, -2), new(-2, 2), new(-2, -2)
             };
 
-            var currentPos = GameManager.Instance.players[playerID].currentGridPos;
+            var currentPos = _grid.piecePositions[playerID];
             
-            foreach (var pos in targetPosCandidates)
+            foreach (var offset in posOffsetCandidates)
             {
-                if (_grid.CanMovePieceTo(playerID, pos))
-                    moves.Add(new PieceMoveData(currentPos, pos));
+                var targetPos = currentPos + offset;
+                if (_grid.CanMovePieceTo(playerID, targetPos))
+                    moves.Add(new PieceMoveData(currentPos, targetPos));
             }
 
             Dictionary<char, short> uniqueRotations = new()

@@ -79,7 +79,7 @@ namespace Script
 
                 if (canPlace)
                 {
-                    OnPiecePlace(playerID, snapGrid);
+                    OnPiecePlace(snapGrid);
                 }
                 else
                 {
@@ -118,7 +118,7 @@ namespace Script
             }
         }
 
-        public void OnPiecePlace(int id, Vector2Int targetPos)
+        public void OnPiecePlace(Vector2Int targetPos)
         {
             if(!BoardManager.Instance.CanMovePieceTo(playerID, targetPos))
             {
@@ -129,7 +129,7 @@ namespace Script
             //dataSize에서 말은 홀수 좌표
             if (targetPos.x % 2 == 0 || targetPos.y % 2 == 0) return;
             
-            BoardManager.Instance.MovePieceTo(id, targetPos);
+            BoardManager.Instance.MovePieceTo(playerID, targetPos);
 
             isDragging = false;
             transform.position = BoardManager.Instance.GridToWorld(targetPos);

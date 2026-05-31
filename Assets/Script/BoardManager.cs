@@ -62,7 +62,8 @@ namespace Script
                     return;
                 }
                 
-                GameManager.Instance.selectedPiece?.OnPiecePlace(id, targetGridPos);
+                if (GameManager.Instance.selectedPiece is not null)
+                    GameManager.Instance.selectedPiece.OnPiecePlace(targetGridPos);
             }
         }
 
@@ -106,9 +107,7 @@ namespace Script
             //dataSize에서 말은 홀수 좌표
             if (targetPos.x % 2 == 0 || targetPos.y % 2 == 0) return;
 
-            var currentPos = GameManager.Instance.players[pieceID].currentGridPos;
-            
-            grid.MovePieceData(currentPos, targetPos);
+            grid.MovePieceData(pieceID, targetPos);
 
             //게임 승리 판정
             if (targetPos.y == GameManager.Instance.players[pieceID].targetY)
@@ -129,6 +128,17 @@ namespace Script
         public bool CanPlaceWall(WallData wallData, Vector2Int basePos)
         {
             return grid.CanPlaceWall(wallData, basePos);
+        }
+
+
+        public WallPiece FindWallPiece(char wallChar)
+        {
+            var wallPieces = FindObjectsByType<WallPiece>(FindObjectsSortMode.None);
+            foreach (var wall in wallPieces)
+            {
+                if (wall.wallData.pieceChar == wallChar)  return wall;
+            }
+            return null;
         }
     }
 }
