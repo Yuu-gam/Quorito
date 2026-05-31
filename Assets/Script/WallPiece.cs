@@ -53,8 +53,7 @@ namespace Script
                 Mathf.FloorToInt(rawY / 2f) * 2
             );
 
-            transform.position = BoardManager.Instance.GridToWorld(snapGrid);
-            transform.rotation = Quaternion.Euler(0, 0, -90f * wallData.Rotation);
+            SetWorldPositionFromGrid(snapGrid);
 
             bool canPlace = BoardManager.Instance.CanPlaceWall(wallData, snapGrid);
 
@@ -98,7 +97,7 @@ namespace Script
                 {
                     segmentOffsets[i] += snapGrid;
                 }
-                Debug.Log($"pos: {snapGrid}\nsegments: {string.Join(", ", wallData.OccupiedOffsets)}");
+                Debug.Log($"pos: {snapGrid}, rot: {wallData.Rotation}\nsegments: {string.Join(", ", segmentOffsets)}");
             }
         }
 
@@ -130,11 +129,16 @@ namespace Script
                 SpriteRenderer.color = Color.white;
             }
             
-            transform.position = BoardManager.Instance.GridToWorld(targetPos);
-            transform.rotation = Quaternion.Euler(0, 0, -90f * wallData.Rotation);
+            SetWorldPositionFromGrid(targetPos);
 
             BoardManager.Instance.grid.PlaceWallData(wallData, targetPos);
             GameManager.Instance.EndTurn();
+        }
+
+        public void SetWorldPositionFromGrid(Vector2Int gridPos)
+        {
+            transform.position = BoardManager.Instance.GridToWorld(gridPos);
+            transform.rotation = Quaternion.Euler(0, 0, -90f * wallData.Rotation);
         }
     }
 }

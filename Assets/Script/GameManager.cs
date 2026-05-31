@@ -45,10 +45,9 @@ namespace Script
         {
             turnCount++;
             hasActed = false;
-            Debug.Log($"턴 수:{turnCount}, 현재: Player{currentTurnID + 1}");
+            //Debug.Log($"턴 수:{turnCount}, 현재: Player{currentTurnID + 1}");
             
-            // AI test
-            //*
+            // AI
             if (currentTurnID == 0) return;
             
             var eval = ai.AlphaBeta(int.MinValue, int.MaxValue, 1, ai.maxDepth, out var bestMove);
@@ -73,7 +72,6 @@ namespace Script
                 Debug.Log("No playable move returned");
             }
             Debug.Log($"eval: {eval}");
-            //*/    
         }
 
 

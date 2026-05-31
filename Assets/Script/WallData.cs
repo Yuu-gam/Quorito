@@ -14,11 +14,12 @@ namespace Script
 			get
 			{
 				var ret = _occupiedOffsets.Clone() as Vector2Int[];
+				Assert.NotNull(ret);
 				for (int t = 0; t < Rotation; t++) {
 					for (int i = 0; i < _occupiedOffsets.Length; i++)
 					{
-						int x = _occupiedOffsets[i].x;
-						int y = _occupiedOffsets[i].y;
+						int x = ret[i].x;
+						int y = ret[i].y;
 						ret[i] = new Vector2Int(y, -x);
 					}
 				}

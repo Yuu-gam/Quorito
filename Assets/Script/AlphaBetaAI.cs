@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using UnityEngine;
@@ -40,7 +39,9 @@ namespace Script
     public class AlphaBetaAI : MonoBehaviour
     {
         [SerializeField] public int maxDepth = 3;
-        [SerializeField] private bool logResult = false;
+        
+        // 0: 로그 없음, 1: 평가한 경우의 수 출력, 2: 평가한 경우들의 점수 텍스트 파일에 작성
+        [SerializeField, UnityEngine.Range(0, 2)] private int logVerbosity;
         
         private List<Vector2Int> _optimalPath0 = new(); // 플레이어 0의 최적 경로
         private List<Vector2Int> _optimalPath1 = new(); // 플레이어 1의 최적 경로
@@ -125,16 +126,17 @@ namespace Script
         private void LogResult()
         {
             Debug.Log($"Minimax ended with {_evaluatedMoves} evaluated moves");
-            
+
+            if (logVerbosity < 2) return;
             if (!Directory.Exists("Assets/Log")) //Log폴더 확인 후 생성
             {
                 Directory.CreateDirectory("Assets/Log");
             }
             
-            // var sw = new StreamWriter("Assets/Log/scores.txt");
-            // sw.WriteLine(string.Join(", ",  _scores));
-            // sw.Flush();
-            // sw.Close();
+            var sw = new StreamWriter("Assets/Log/scores.txt");
+            sw.WriteLine(string.Join(", ",  _scores));
+            sw.Flush();
+            sw.Close();
         }
 
         public int AlphaBeta(int alpha, int beta, int maximizingPlayer, int depth, out MoveData bestMove)
@@ -171,7 +173,7 @@ namespace Script
                         break; // 베타 컷오프
                 }
 
-                if (depth == maxDepth && logResult)
+                if (depth == maxDepth && logVerbosity >= 1)
                 {
                     LogResult();
                 }
@@ -193,7 +195,7 @@ namespace Script
                 if (beta <= alpha)
                     break; // 알파 컷오프
             }
-            if (depth == maxDepth && logResult)
+            if (depth == maxDepth && logVerbosity >= 1)
             {
                 LogResult();
             }

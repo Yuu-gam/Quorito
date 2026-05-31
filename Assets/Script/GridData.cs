@@ -13,7 +13,7 @@ namespace Script
         public const int GridSize = 10; // 칸 수
         /**
          * 벽 포함 실제 데이터 배열 크기
-         * 홀수: 기물 / 짝수: 벽
+         *  짝수: 벽 / 홀수: 기물
          */
         public const int DataSize = 21;
 
