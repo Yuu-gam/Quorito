@@ -62,8 +62,7 @@ namespace Script
                     return;
                 }
                 
-                if (GameManager.Instance.selectedPiece is not null)
-                    GameManager.Instance.selectedPiece.OnPiecePlace(targetGridPos);
+                GameManager.Instance.selectedPiece?.OnPiecePlace(targetGridPos);
             }
         }
 

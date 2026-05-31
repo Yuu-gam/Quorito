@@ -18,13 +18,14 @@ namespace Script
         public const int DataSize = 21;
 
         public enum CellType { Empty, Wall, Piece }
+        
         public CellType[,] Content;
 
         public List<char> unplacedWalls = new() { 'F', 'I', 'L', 'N', 'P', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
         public List<char> placedWalls = new();
 
-        public int[] targetYs = { 19, 1 };
-        
+        public static readonly int[] TargetYs = { 19, 1 };
+
         [NonSerialized]
         public Vector2Int[] piecePositions = { new(9, 1), new(11, 19) };
 
@@ -62,7 +63,7 @@ namespace Script
         
         public bool CanPlaceWall(WallData wallData, Vector2Int basePos)
         {
-            foreach(var offset in wallData.occupiedOffsets)
+            foreach(var offset in wallData.OccupiedOffsets)
             {
                 Vector2Int target = basePos + offset;
 
@@ -86,7 +87,7 @@ namespace Script
         
         public void PlaceWallData(WallData wallData, Vector2Int basePos)
         {
-            foreach(var offset in wallData.occupiedOffsets)
+            foreach(var offset in wallData.OccupiedOffsets)
             {
                 int targetX = basePos.x + offset.x;
                 int targetY = basePos.y + offset.y;
@@ -107,7 +108,7 @@ namespace Script
         //길을 막는지 판단
         public bool IsNotBlockingGoal(WallData wallToTest, Vector2Int basePos)
         {
-            var offsets = wallToTest.occupiedOffsets;
+            var offsets = wallToTest.OccupiedOffsets;
             foreach (var offset in offsets)
             {
                 Content[basePos.x + offset.x, basePos.y + offset.y] = CellType.Wall;
@@ -131,7 +132,7 @@ namespace Script
         public bool CanReachGoal(int pieceID)
         {
             Vector2Int startPos = piecePositions[pieceID];
-            int targetY = targetYs[pieceID];
+            int targetY = TargetYs[pieceID];
                 
             bool[,] visited = new bool[DataSize, DataSize];
             Queue<Vector2Int> queue = new Queue<Vector2Int>();
@@ -170,7 +171,7 @@ namespace Script
         {
             if (unplacedWalls.Contains(wallData.pieceChar)) return;
             
-            foreach(var offset in wallData.occupiedOffsets)
+            foreach(var offset in wallData.OccupiedOffsets)
             {
                 int targetX = basePos.x + offset.x;
                 int targetY = basePos.y + offset.y;

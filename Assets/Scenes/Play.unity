@@ -361,14 +361,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
+  _wallChar: 78
   wallData:
     pieceChar: 78
-    occupiedOffsets:
-    - {x: 0, y: -1}
-    - {x: 0, y: -3}
-    - {x: 1, y: 0}
-    - {x: 2, y: 1}
-    rotation: 0
+    _occupiedOffsets: []
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -674,14 +670,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
+  _wallChar: 89
   wallData:
     pieceChar: 89
-    occupiedOffsets:
-    - {x: -1, y: 0}
-    - {x: 0, y: 1}
-    - {x: 0, y: -1}
-    - {x: 0, y: -3}
-    rotation: 0
+    _occupiedOffsets: []
 --- !u!1 &540446342
 GameObject:
   m_ObjectHideFlags: 0
@@ -787,14 +779,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
+  _wallChar: 84
   wallData:
     pieceChar: 84
-    occupiedOffsets:
-    - {x: 0, y: -1}
-    - {x: 0, y: 1}
-    - {x: -1, y: 2}
-    - {x: 1, y: 2}
-    rotation: 0
+    _occupiedOffsets: []
 --- !u!61 &540446346
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -978,90 +966,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 547914815}
   m_CullTransparentMesh: 1
---- !u!1 &619394800
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 619394802}
-  - component: {fileID: 619394801}
-  m_Layer: 0
-  m_Name: Global Light 2D
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &619394801
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 619394800}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ComponentVersion: 2
-  m_LightType: 4
-  m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.5
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1
-  m_LightVolumeIntensity: 1
-  m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 00000000
-  m_LightCookieSprite: {fileID: 0}
-  m_DeprecatedPointLightCookieSprite: {fileID: 0}
-  m_LightOrder: 0
-  m_AlphaBlendOnOverlap: 0
-  m_OverlapOperation: 0
-  m_NormalMapDistance: 3
-  m_NormalMapQuality: 2
-  m_UseNormalMap: 0
-  m_ShadowsEnabled: 0
-  m_ShadowIntensity: 0.75
-  m_ShadowSoftness: 0
-  m_ShadowSoftnessFalloffIntensity: 0.5
-  m_ShadowVolumeIntensityEnabled: 0
-  m_ShadowVolumeIntensity: 0.75
-  m_LocalBounds:
-    m_Center: {x: 0, y: -0.00000011920929, z: 0}
-    m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
-  m_PointLightInnerAngle: 360
-  m_PointLightOuterAngle: 360
-  m_PointLightInnerRadius: 0
-  m_PointLightOuterRadius: 1
-  m_ShapeLightParametricSides: 5
-  m_ShapeLightParametricAngleOffset: 0
-  m_ShapeLightParametricRadius: 1
-  m_ShapeLightFalloffSize: 0.5
-  m_ShapeLightFalloffOffset: {x: 0, y: 0}
-  m_ShapePath:
-  - {x: -0.5, y: -0.5, z: 0}
-  - {x: 0.5, y: -0.5, z: 0}
-  - {x: 0.5, y: 0.5, z: 0}
-  - {x: -0.5, y: 0.5, z: 0}
---- !u!4 &619394802
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 619394800}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
-  m_ConstrainProportionsScale: 1
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &669458503
 GameObject:
   m_ObjectHideFlags: 0
@@ -1483,14 +1387,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
+  _wallChar: 90
   wallData:
     pieceChar: 90
-    occupiedOffsets:
-    - {x: -1, y: 2}
-    - {x: 0, y: 1}
-    - {x: 0, y: -1}
-    - {x: 1, y: -2}
-    rotation: 0
+    _occupiedOffsets: []
 --- !u!1 &914836546
 GameObject:
   m_ObjectHideFlags: 0
@@ -1642,15 +1542,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
+  _wallChar: 80
   wallData:
     pieceChar: 80
-    occupiedOffsets:
-    - {x: 1, y: 0}
-    - {x: 1, y: 2}
-    - {x: 0, y: 1}
-    - {x: 0, y: -1}
-    - {x: 2, y: 1}
-    rotation: 0
+    _occupiedOffsets: []
 --- !u!1 &918563807
 GameObject:
   m_ObjectHideFlags: 0
@@ -2035,14 +1930,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
+  _wallChar: 85
   wallData:
     pieceChar: 85
-    occupiedOffsets:
-    - {x: -1, y: 0}
-    - {x: -2, y: 1}
-    - {x: 1, y: 0}
-    - {x: 2, y: 1}
-    rotation: 0
+    _occupiedOffsets: []
 --- !u!1 &1218546810
 GameObject:
   m_ObjectHideFlags: 0
@@ -2194,14 +2085,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
+  _wallChar: 70
   wallData:
     pieceChar: 70
-    occupiedOffsets:
-    - {x: -1, y: 0}
-    - {x: 0, y: -1}
-    - {x: 0, y: 1}
-    - {x: 1, y: 2}
-    rotation: 0
+    _occupiedOffsets: []
 --- !u!1 &1365822791
 GameObject:
   m_ObjectHideFlags: 0
@@ -2455,14 +2342,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
+  _wallChar: 88
   wallData:
     pieceChar: 88
-    occupiedOffsets:
-    - {x: 1, y: 0}
-    - {x: -1, y: 0}
-    - {x: 0, y: 1}
-    - {x: 0, y: -1}
-    rotation: 0
+    _occupiedOffsets: []
 --- !u!1 &1389289767
 GameObject:
   m_ObjectHideFlags: 0
@@ -2803,14 +2686,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
+  _wallChar: 73
   wallData:
     pieceChar: 73
-    occupiedOffsets:
-    - {x: 0, y: 1}
-    - {x: 0, y: 3}
-    - {x: 0, y: -1}
-    - {x: 0, y: -3}
-    rotation: 0
+    _occupiedOffsets: []
 --- !u!1 &1571059053
 GameObject:
   m_ObjectHideFlags: 0
@@ -2962,14 +2841,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
+  _wallChar: 87
   wallData:
     pieceChar: 87
-    occupiedOffsets:
-    - {x: -1, y: 0}
-    - {x: -2, y: 1}
-    - {x: 0, y: -1}
-    - {x: 1, y: -2}
-    rotation: 0
+    _occupiedOffsets: []
 --- !u!1 &1700671985
 GameObject:
   m_ObjectHideFlags: 0
@@ -3164,14 +3039,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
+  _wallChar: 86
   wallData:
     pieceChar: 86
-    occupiedOffsets:
-    - {x: 1, y: 0}
-    - {x: 3, y: 0}
-    - {x: 0, y: 1}
-    - {x: 0, y: 3}
-    rotation: 0
+    _occupiedOffsets: []
 --- !u!1 &1809495097
 GameObject:
   m_ObjectHideFlags: 0
@@ -3374,14 +3245,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b463a1dba961844382c9e7a0cd341fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallPiece
+  _wallChar: 76
   wallData:
     pieceChar: 76
-    occupiedOffsets:
-    - {x: 1, y: 0}
-    - {x: 0, y: 1}
-    - {x: 0, y: 3}
-    - {x: 0, y: 5}
-    rotation: 0
+    _occupiedOffsets: []
 --- !u!1 &1937505676
 GameObject:
   m_ObjectHideFlags: 0
@@ -3412,6 +3279,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Script.AlphaBetaAI
   maxDepth: 1
+  logResult: 0
 --- !u!4 &1937505678
 Transform:
   m_ObjectHideFlags: 0
@@ -3510,7 +3378,6 @@ SceneRoots:
   - {fileID: 1937505678}
   - {fileID: 519420032}
   - {fileID: 681273613}
-  - {fileID: 619394802}
   - {fileID: 1404490786}
   - {fileID: 133719338}
   - {fileID: 1365822795}

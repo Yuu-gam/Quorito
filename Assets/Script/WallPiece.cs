@@ -8,16 +8,17 @@ namespace Script
 
         private SpriteRenderer SpriteRenderer;
 
-        public WallData wallData;
+        [SerializeField] private char _wallChar;
+        [HideInInspector] public WallData wallData;
         private bool isPlaced = false; //설치 상태
         private bool isDragging = false; //드래그 상태
         private bool justPicked = false; //방금 집었는지 확인
-
         private Vector3 originalPos;
 
         private void Awake()
         {
             SpriteRenderer = GetComponent<SpriteRenderer>();
+            wallData = new WallData(_wallChar);
         }
 
         //벽을 클릭하면 마우스를 따라옴
@@ -53,7 +54,7 @@ namespace Script
             );
 
             transform.position = BoardManager.Instance.GridToWorld(snapGrid);
-            transform.rotation = Quaternion.Euler(0, 0, -90f * wallData.rotation);
+            transform.rotation = Quaternion.Euler(0, 0, -90f * wallData.Rotation);
 
             bool canPlace = BoardManager.Instance.CanPlaceWall(wallData, snapGrid);
 
@@ -86,14 +87,18 @@ namespace Script
                     return;
                 }
 
-                if (canPlace)
+                if (canPlace) PlaceWall(snapGrid);
+                //else Debug.Log("설치 실패");
+            }
+
+            if (Input.GetKeyDown(KeyCode.F3))
+            {
+                var segmentOffsets = wallData.OccupiedOffsets.Clone() as Vector2Int[];
+                for (int i = 0; i < segmentOffsets.Length; i++)
                 {
-                   PlaceWall(snapGrid);
+                    segmentOffsets[i] += snapGrid;
                 }
-                else
-                {
-                    //Debug.Log("설치 실패");
-                }
+                Debug.Log($"pos: {snapGrid}\nsegments: {string.Join(", ", wallData.OccupiedOffsets)}");
             }
         }
 
@@ -102,6 +107,8 @@ namespace Script
             isDragging = false;
             justPicked = false;
             transform.position = originalPos;
+            transform.rotation = Quaternion.identity;
+            wallData.Rotation = 0;
 
             //색 원상복구
             if (SpriteRenderer)
@@ -109,10 +116,10 @@ namespace Script
                 SpriteRenderer.color = Color.white;
             }
 
-            Debug.Log("벽 설치 취소");
+            //Debug.Log("벽 설치 취소");
         }
 
-        public void PlaceWall(Vector2Int currentGrid)
+        public void PlaceWall(Vector2Int targetPos)
         {
             isPlaced = true;
             isDragging = false;
@@ -123,10 +130,10 @@ namespace Script
                 SpriteRenderer.color = Color.white;
             }
             
-            transform.position = BoardManager.Instance.GridToWorld(currentGrid);
-            transform.rotation = Quaternion.Euler(0, 0, -90f * wallData.rotation);
+            transform.position = BoardManager.Instance.GridToWorld(targetPos);
+            transform.rotation = Quaternion.Euler(0, 0, -90f * wallData.Rotation);
 
-            BoardManager.Instance.grid.PlaceWallData(wallData, currentGrid);
+            BoardManager.Instance.grid.PlaceWallData(wallData, targetPos);
             GameManager.Instance.EndTurn();
         }
     }

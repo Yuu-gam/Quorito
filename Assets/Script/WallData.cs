@@ -8,22 +8,37 @@ namespace Script
 	public class WallData
 	{
 		public char pieceChar;
+		[SerializeField] private Vector2Int[] _occupiedOffsets;
+		public Vector2Int[] OccupiedOffsets // 벽이 보드에서 차지하는 좌표
+		{
+			get
+			{
+				var ret = _occupiedOffsets.Clone() as Vector2Int[];
+				for (int t = 0; t < Rotation; t++) {
+					for (int i = 0; i < _occupiedOffsets.Length; i++)
+					{
+						int x = _occupiedOffsets[i].x;
+						int y = _occupiedOffsets[i].y;
+						ret[i] = new Vector2Int(y, -x);
+					}
+				}
+			
+				return ret; 
+			}
+			set => _occupiedOffsets = value;
+		}
 		
-		public Vector2Int[] occupiedOffsets; // 벽이 보드에서 차지하는 좌표
-		public int rotation;
+		private int _rotation;
+		public int Rotation
+		{
+			get => _rotation;
+			set => _rotation = value % 4;
+		}
 
 		// Rotate occupiedOffsets by 90 degrees "amount" times
 		public void Rotate(int amount)
 		{
-			rotation += amount;
-			for (int t = 0; t < amount; t++) {
-				for (int i = 0; i < occupiedOffsets.Length; i++)
-				{
-					int x = occupiedOffsets[i].x;
-					int y = occupiedOffsets[i].y;
-					occupiedOffsets[i] = new Vector2Int(y, -x);
-				}
-			}
+			Rotation += amount;
 		}
 		
 		public WallData(char pieceChar, int rotation = 0)
@@ -32,40 +47,40 @@ namespace Script
 			switch (pieceChar)
 			{
 				case 'F':
-					occupiedOffsets = new Vector2Int[] { new(-1, 0), new(0, -1), new(0, 1), new(1, 2) };
+					OccupiedOffsets = new Vector2Int[] { new(-1, 0), new(0, -1), new(0, 1), new(1, 2) };
 					break;
 				case 'I':
-					occupiedOffsets = new Vector2Int[] { new(0, 1), new(0, 3), new(0, -1), new(0, -3) };
+					OccupiedOffsets = new Vector2Int[] { new(0, 1), new(0, 3), new(0, -1), new(0, -3) };
 					break;
 				case 'L':
-					occupiedOffsets = new Vector2Int[] { new(1, 0), new(0, 1), new(0, 3), new(0, 5) };
+					OccupiedOffsets = new Vector2Int[] { new(1, 0), new(0, 1), new(0, 3), new(0, 5) };
 					break;
 				case 'N':
-					occupiedOffsets = new Vector2Int[] { new(0, -1), new(0, -3), new(1, 0), new(2, 1) };
+					OccupiedOffsets = new Vector2Int[] { new(0, -1), new(0, -3), new(1, 0), new(2, 1) };
 					break;
 				case 'P':
-					occupiedOffsets = new Vector2Int[] { new(1, 0), new(1, 2), new(0, 1), new(0, -1), new(2, 1) };
+					OccupiedOffsets = new Vector2Int[] { new(1, 0), new(1, 2), new(0, 1), new(0, -1), new(2, 1) };
 					break;
 				case 'T':
-					occupiedOffsets = new Vector2Int[] { new(0, -1), new(0, 1), new(-1, 2), new(1, 2) };
+					OccupiedOffsets = new Vector2Int[] { new(0, -1), new(0, 1), new(-1, 2), new(1, 2) };
 					break;
 				case 'U':
-					occupiedOffsets = new Vector2Int[] { new(-1, 0), new(-2, 1), new(1, 0), new(2, 1) };
+					OccupiedOffsets = new Vector2Int[] { new(-1, 0), new(-2, 1), new(1, 0), new(2, 1) };
 					break;
 				case 'V':
-					occupiedOffsets = new Vector2Int[] { new(1, 0), new(3, 0), new(0, 1), new(0, 3) };
+					OccupiedOffsets = new Vector2Int[] { new(1, 0), new(3, 0), new(0, 1), new(0, 3) };
 					break;
 				case 'W':
-					occupiedOffsets = new Vector2Int[] { new(-1, 0), new(-2, 1), new(0, -1), new(1, -2) };
+					OccupiedOffsets = new Vector2Int[] { new(-1, 0), new(-2, 1), new(0, -1), new(1, -2) };
 					break;
 				case 'X':
-					occupiedOffsets = new Vector2Int[] { new(1, 0), new(-1, 0), new(0, 1), new(0, -1) };
+					OccupiedOffsets = new Vector2Int[] { new(1, 0), new(-1, 0), new(0, 1), new(0, -1) };
 					break;
 				case 'Y':
-					occupiedOffsets = new Vector2Int[] { new(-1, 0), new(0, 1), new(0, -1), new(0, -3) };
+					OccupiedOffsets = new Vector2Int[] { new(-1, 0), new(0, 1), new(0, -1), new(0, -3) };
 					break;
 				case 'Z':
-					occupiedOffsets = new Vector2Int[] { new(-1, 2), new(0, 1), new(0, -1), new(1, -2) };
+					OccupiedOffsets = new Vector2Int[] { new(-1, 2), new(0, 1), new(0, -1), new(1, -2) };
 					break;
 				default:
 					Assert.Fail($"Unknown piece char '{pieceChar}' during WallData construction");

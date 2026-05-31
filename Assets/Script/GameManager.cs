@@ -37,7 +37,6 @@ namespace Script
             }else{
                 text.text = $"Turn : {turnCount}\n<color=#4CAF50>Player {currentTurnID+1}</color>";
             }
-        
         }
         
 
@@ -61,8 +60,13 @@ namespace Script
             }
             else if (bestMove is WallMoveData wallMove)
             {
-                BoardManager.Instance.FindWallPiece(wallMove.WallData.pieceChar).PlaceWall(wallMove.TargetPosition);
-                Debug.Log($"Place wall '{wallMove.WallData.pieceChar}' at  ({wallMove.TargetPosition})"); 
+                var wallPiece = BoardManager.Instance.FindWallPiece(wallMove.WallData.pieceChar);
+                if (wallPiece)
+                {
+                    wallPiece.wallData = wallMove.WallData;
+                    wallPiece.PlaceWall(wallMove.TargetPosition);
+                }
+                Debug.Log($"Place wall '{wallMove.WallData.pieceChar}-{wallMove.WallData.Rotation}' at  ({wallMove.TargetPosition})"); 
             }
             else
             {

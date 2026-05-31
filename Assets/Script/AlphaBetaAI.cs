@@ -40,6 +40,7 @@ namespace Script
     public class AlphaBetaAI : MonoBehaviour
     {
         [SerializeField] public int maxDepth = 3;
+        [SerializeField] private bool logResult = false;
         
         private List<Vector2Int> _optimalPath0 = new(); // 플레이어 0의 최적 경로
         private List<Vector2Int> _optimalPath1 = new(); // 플레이어 1의 최적 경로
@@ -68,19 +69,19 @@ namespace Script
         // Return: path length
         private int BFS(int pieceID, out List<Vector2Int> path)
         {
-            short[,] cameFrom = new short[GridData.DataSize, GridData.DataSize];
+            short[] cameFrom = new short[GridData.DataSize * GridData.DataSize];
             Queue<Vector2Int> queue = new Queue<Vector2Int>();
 
             Vector2Int currentPos = _grid.piecePositions[pieceID];
             queue.Enqueue(currentPos);
-            cameFrom[currentPos.x, currentPos.y] = Start;
+            cameFrom[currentPos.x + currentPos.y * GridData.DataSize] = Start;
             
             // BFS copied from BoardManager.CanReachGoal
             while (queue.Count > 0)
             {
                 currentPos = queue.Dequeue();
 
-                if (currentPos.y == _grid.targetYs[pieceID])
+                if (currentPos.y == GridData.TargetYs[pieceID])
                     break; //목적지
 
                 //상좌우하 탐색
@@ -91,19 +92,19 @@ namespace Script
                     Vector2Int wall = currentPos + (dir / 2); //이동 경로의 벽 좌표
 
                     if (next.x < 0 || next.x >= GridData.DataSize || next.y < 0 || next.y >= GridData.DataSize) continue;
-                    if (cameFrom[next.x, next.y] != Zero) continue;
+                    if (cameFrom[next.x + next.y * GridData.DataSize] != Zero) continue;
                     if (_grid.Content[wall.x, wall.y] == GridData.CellType.Wall) continue;
-                    cameFrom[next.x, next.y] = (short)(5 - i);
+                    cameFrom[next.x + next.y * GridData.DataSize] = (short)(5 - i);
                     queue.Enqueue(next);
                 }
             }
             
             // Reconstruct path
             path = new List<Vector2Int>();
-            while (cameFrom[currentPos.x, currentPos.y] != Start)
+            while (cameFrom[currentPos.x + currentPos.y * GridData.DataSize] != Start)
             {
                 path.Add(currentPos);
-                currentPos += Dirs[cameFrom[currentPos.x, currentPos.y]];
+                currentPos += Dirs[cameFrom[currentPos.x + currentPos.y * GridData.DataSize]];
             }
             
             return path.Count;
@@ -125,10 +126,10 @@ namespace Script
         {
             Debug.Log($"Minimax ended with {_evaluatedMoves} evaluated moves");
             
-            var sw = new StreamWriter("Assets/Log/scores.txt");
-            sw.WriteLine(string.Join(", ",  _scores));
-            sw.Flush();
-            sw.Close();
+            // var sw = new StreamWriter("Assets/Log/scores.txt");
+            // sw.WriteLine(string.Join(", ",  _scores));
+            // sw.Flush();
+            // sw.Close();
         }
 
         public int AlphaBeta(int alpha, int beta, int maximizingPlayer, int depth, out MoveData bestMove)
@@ -165,35 +166,33 @@ namespace Script
                         break; // 베타 컷오프
                 }
 
-                if (depth == maxDepth)
+                if (depth == maxDepth && logResult)
                 {
                     LogResult();
                 }
                 return maxEval;
             }
-            else
+
+            int minEval = int.MaxValue;
+            foreach (var move in GetPossibleMoves(1))
             {
-                int minEval = int.MaxValue;
-                foreach (var move in GetPossibleMoves(1))
+                MakeMove(move);
+                int eval = AlphaBeta(alpha, beta, 0, depth - 1, out _);
+                UndoMove();
+                if (eval < minEval)
                 {
-                    MakeMove(move);
-                    int eval = AlphaBeta(alpha, beta, 0, depth - 1, out _);
-                    UndoMove();
-                    if (eval < minEval)
-                    {
-                        minEval = eval;
-                        bestMove = move;
-                    }
-                    beta = Mathf.Min(beta, eval);
-                    if (beta <= alpha)
-                        break; // 알파 컷오프
+                    minEval = eval;
+                    bestMove = move;
                 }
-                if (depth == maxDepth)
-                {
-                    LogResult();
-                }
-                return minEval;
+                beta = Mathf.Min(beta, eval);
+                if (beta <= alpha)
+                    break; // 알파 컷오프
             }
+            if (depth == maxDepth && logResult)
+            {
+                LogResult();
+            }
+            return minEval;
         }
 
         private void MakeMove(MoveData move)
@@ -245,36 +244,20 @@ namespace Script
                     moves.Add(new PieceMoveData(currentPos, targetPos));
             }
 
-            Dictionary<char, short> uniqueRotations = new()
-            {
-                { 'F', 4 },
-                { 'I', 2 },
-                { 'L', 4 },
-                { 'N', 4 },
-                { 'P', 4 },
-                { 'T', 4 },
-                { 'U', 4 },
-                { 'V', 4 },
-                { 'W', 4 },
-                { 'X', 1 },
-                { 'Y', 4 },
-                { 'Z', 2 }
-            };
-
             List<WallData> wallCandidates = new();
 
             foreach (var wallChar in _grid.unplacedWalls)
             {
-                switch (uniqueRotations[wallChar])
+                switch (wallChar)
                 {
-                    case 1:
+                    case 'X':
                         wallCandidates.Add(new WallData(wallChar));
                         break;
-                    case 2:
+                    case 'I': case 'Z':
                         wallCandidates.Add(new WallData(wallChar));
-                        wallCandidates.Add(new WallData(wallChar, 2));
+                        wallCandidates.Add(new WallData(wallChar, 1));
                         break;
-                    case 4:
+                    default:
                         wallCandidates.Add(new WallData(wallChar));
                         wallCandidates.Add(new WallData(wallChar, 1));
                         wallCandidates.Add(new WallData(wallChar, 2));
