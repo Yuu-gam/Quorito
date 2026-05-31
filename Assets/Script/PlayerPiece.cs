@@ -13,7 +13,6 @@ namespace Script
         private Vector3 originalPos;
         private Vector2Int startGrid;
 
-        private bool justPicked = false;
         private bool isDragging = false;
 
         private void Awake()
@@ -25,20 +24,7 @@ namespace Script
         {
             if (!isDragging) return;
 
-            //마우스 좌표
-            Vector3 targetPos = Input.mousePosition;
-            targetPos.z = 10f;
-            Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(targetPos);
-            
-            //홀수 좌표로 변환
-            float rawX = (worldMousePos.x - BoardManager.Instance.boardStartPos.x) / BoardManager.Instance.gridSize;
-            float rawY = (worldMousePos.y - BoardManager.Instance.boardStartPos.y) / BoardManager.Instance.gridSize;
-
-            Vector2Int snapGrid = new Vector2Int(
-                Mathf.FloorToInt(rawX / 2f ) * 2 + 1, 
-                Mathf.FloorToInt(rawY / 2f) * 2 + 1);
-
-
+            Vector2Int snapGrid = BoardManager.Instance.CurrentMouseGrid;
             bool canPlace = BoardManager.Instance.CanMovePieceTo(playerID, snapGrid);
 
             if (canPlace)
@@ -66,32 +52,11 @@ namespace Script
                 CancelDragging();
                 return;
             }
-
-            //좌클릭 시 설치
-            if (Input.GetMouseButtonDown(0))
-            {
-                //잡고 있는 상태인지 확인
-                if (justPicked)
-                {
-                    justPicked = false;
-                    return;
-                }
-
-                if (canPlace)
-                {
-                    OnPiecePlace(snapGrid);
-                }
-                else
-                {
-                    Debug.Log("설치 실패");
-                }
-            }
         }
 
         private void CancelDragging()
         {
             isDragging = false;
-            justPicked = false;
             transform.position = originalPos;
 
             //색 원상복구
@@ -109,7 +74,6 @@ namespace Script
             if (!isDragging)
             {
                 isDragging = true;
-                justPicked = true;
                 originalPos = transform.position;
                 startGrid = BoardManager.Instance.WorldToGrid(originalPos);
 

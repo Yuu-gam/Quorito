@@ -124,7 +124,12 @@ namespace Script
         private void LogResult()
         {
             Debug.Log($"Minimax ended with {_evaluatedMoves} evaluated moves");
-            
+
+            if (!Directory.Exists("Assets/Log")) //Log폴더 확인 후 생성
+            {
+                Directory.CreateDirectory("Assets/Log");
+            }
+
             var sw = new StreamWriter("Assets/Log/scores.txt");
             sw.WriteLine(string.Join(", ",  _scores));
             sw.Flush();
