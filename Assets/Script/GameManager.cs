@@ -71,7 +71,6 @@ namespace Script
             {
                 //Debug.Log("No playable move returned");
             }
-            Debug.Log($"eval: {eval}");
         }
 
 

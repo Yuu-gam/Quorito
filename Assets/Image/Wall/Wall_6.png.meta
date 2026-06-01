@@ -103,10 +103,10 @@ TextureImporter:
       name: Wall_6_0
       rect:
         serializedVersion: 2
-        x: 2
-        y: 0
-        width: 402
-        height: 410
+        x: 3
+        y: 1
+        width: 401
+        height: 409
       alignment: 9
       pivot: {x: 0.045, y: 0.04}
       border: {x: 0, y: 0, z: 0, w: 0}

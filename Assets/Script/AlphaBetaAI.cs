@@ -42,6 +42,7 @@ namespace Script
         
         // 0: 로그 없음, 1: 평가한 경우의 수 출력, 2: 평가한 경우들의 점수 텍스트 파일에 작성
         [SerializeField, UnityEngine.Range(0, 2)] private int logVerbosity;
+        [SerializeField] private int evalLimit = 10000;
         
         private List<Vector2Int> _optimalPath0 = new(); // 플레이어 0의 최적 경로
         private List<Vector2Int> _optimalPath1 = new(); // 플레이어 1의 최적 경로
@@ -58,7 +59,7 @@ namespace Script
         private const int Down = 4;
         private const int Start = 5;
         
-        private readonly Vector2Int[] Dirs =
+        private readonly Vector2Int[] _dirs =
         {
             Vector2Int.zero, Vector2Int.up * 2, Vector2Int.left * 2,
             Vector2Int.right * 2, Vector2Int.down * 2, Vector2Int.one,
@@ -73,7 +74,7 @@ namespace Script
             short[] cameFrom = new short[GridData.DataSize * GridData.DataSize];
             Queue<Vector2Int> queue = new Queue<Vector2Int>();
 
-            Vector2Int currentPos = _grid.piecePositions[pieceID];
+            Vector2Int currentPos = _grid.PiecePositions[pieceID];
             queue.Enqueue(currentPos);
             cameFrom[currentPos.x + currentPos.y * GridData.DataSize] = Start;
             
@@ -88,7 +89,7 @@ namespace Script
                 //상좌우하 탐색
                 for (short i = 1; i <= 4; i++)
                 {
-                    Vector2Int dir = Dirs[i];
+                    Vector2Int dir = _dirs[i];
                     Vector2Int next = currentPos + dir; //이동 경로
                     Vector2Int wall = currentPos + (dir / 2); //이동 경로의 벽 좌표
 
@@ -105,7 +106,7 @@ namespace Script
             while (cameFrom[currentPos.x + currentPos.y * GridData.DataSize] != Start)
             {
                 path.Add(currentPos);
-                currentPos += Dirs[cameFrom[currentPos.x + currentPos.y * GridData.DataSize]];
+                currentPos += _dirs[cameFrom[currentPos.x + currentPos.y * GridData.DataSize]];
             }
             
             return path.Count;
@@ -123,9 +124,9 @@ namespace Script
             return score;
         }
 
-        private void LogResult()
+        private void LogResult(int eval)
         {
-            Debug.Log($"Minimax ended with {_evaluatedMoves} evaluated moves");
+            Debug.Log($"Minimax ended with {_evaluatedMoves} evaluated moves\neval: {eval}");
 
             if (logVerbosity < 2) return;
             if (!Directory.Exists("Assets/Log")) //Log폴더 확인 후 생성
@@ -175,7 +176,7 @@ namespace Script
 
                 if (depth == maxDepth && logVerbosity >= 1)
                 {
-                    LogResult();
+                    LogResult(maxEval);
                 }
                 return maxEval;
             }
@@ -197,7 +198,7 @@ namespace Script
             }
             if (depth == maxDepth && logVerbosity >= 1)
             {
-                LogResult();
+                LogResult(minEval);
             }
             return minEval;
         }
@@ -237,12 +238,12 @@ namespace Script
             // Get possible piece move
             Vector2Int[] posOffsetCandidates =
             {
-                Dirs[Up], Dirs[Down], Dirs[Left], Dirs[Right],
-                Dirs[Up] * 2, Dirs[Down] * 2, Dirs[Left] * 2, Dirs[Right] * 2,
+                _dirs[Up], _dirs[Down], _dirs[Left], _dirs[Right],
+                _dirs[Up] * 2, _dirs[Down] * 2, _dirs[Left] * 2, _dirs[Right] * 2,
                 new(2, 2), new(2, -2), new(-2, 2), new(-2, -2)
             };
 
-            var currentPos = _grid.piecePositions[playerID];
+            var currentPos = _grid.PiecePositions[playerID];
             
             foreach (var offset in posOffsetCandidates)
             {
@@ -282,6 +283,9 @@ namespace Script
                     {
                         if (_grid.CanPlaceWall(wallData, new Vector2Int(x, y)))
                             moves.Add(new WallMoveData(wallData,  new Vector2Int(x, y)));
+                        
+                        if (moves.Count > evalLimit)
+                            return moves;
                     }
                 }
             }

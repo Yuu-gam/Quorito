@@ -821,7 +821,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 3.96, y: 4.04}
+    oldSize: {x: 3.94, y: 4.03}
     newSize: {x: 3.96, y: 4.04}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -1367,7 +1367,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 3.96, y: 4.18}
+    oldSize: {x: 3.94, y: 4.17}
     newSize: {x: 3.96, y: 4.18}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -2836,7 +2836,7 @@ PolygonCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 4.1, y: 3.98}
+    oldSize: {x: 4.09, y: 3.98}
     newSize: {x: 4.1, y: 3.98}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -3045,7 +3045,7 @@ PolygonCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.045, y: 0.04}
-    oldSize: {x: 4.02, y: 4.1}
+    oldSize: {x: 4.01, y: 4.09}
     newSize: {x: 4.02, y: 4.1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -3241,7 +3241,7 @@ BoxCollider2D:
   m_Offset: {x: 0.89335704, y: 3}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.07, y: 0.025}
+    pivot: {x: 0.07, y: 0.023}
     oldSize: {x: 2.07, y: 6.12}
     newSize: {x: 2.07, y: 6.12}
     adaptiveTilingThreshold: 0.5
@@ -3295,8 +3295,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a4e1af03e4f4aefb22cace45fca1a6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Script.AlphaBetaAI
-  maxDepth: 1
+  maxDepth: 2
   logVerbosity: 0
+  evalLimit: 250
 --- !u!4 &1937505678
 Transform:
   m_ObjectHideFlags: 0

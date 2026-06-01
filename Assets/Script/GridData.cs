@@ -27,7 +27,7 @@ namespace Script
         public static readonly int[] TargetYs = { 19, 1 };
 
         [NonSerialized]
-        public Vector2Int[] piecePositions = { new(9, 1), new(11, 19) };
+        public Vector2Int[] PiecePositions = { new(9, 1), new(11, 19) };
 
         public GridData()
         {
@@ -44,7 +44,7 @@ namespace Script
             var ret = (GridData)formatter.Deserialize(ms);
             ms.Close();
 
-            ret.piecePositions = piecePositions.Clone() as Vector2Int[];
+            ret.PiecePositions = PiecePositions.Clone() as Vector2Int[];
             return ret;
         }
 
@@ -131,14 +131,14 @@ namespace Script
         //BFS로 길 탐색
         public bool CanReachGoal(int pieceID)
         {
-            Vector2Int startPos = piecePositions[pieceID];
+            Vector2Int startPos = PiecePositions[pieceID];
             int targetY = TargetYs[pieceID];
                 
-            bool[,] visited = new bool[DataSize, DataSize];
+            bool[] visited = new bool[DataSize * DataSize];
             Queue<Vector2Int> queue = new Queue<Vector2Int>();
 
             queue.Enqueue(startPos);
-            visited[startPos.x, startPos.y] = true;
+            visited[startPos.x + startPos.y * DataSize] = true;
 
             while (queue.Count > 0)
             {
@@ -155,9 +155,9 @@ namespace Script
 
                     if (next.x >= 0 && next.x < DataSize && next.y >= 0 && next.y < DataSize)
                     {
-                        if (!visited[next.x, next.y] && Content[wall.x, wall.y] != CellType.Wall)
+                        if (!visited[next.x + next.y * DataSize] && Content[wall.x, wall.y] != CellType.Wall)
                         {
-                            visited[next.x, next.y] = true;
+                            visited[next.x + next.y * DataSize] = true;
                             queue.Enqueue(next);
                         }
                     }
@@ -200,13 +200,13 @@ namespace Script
         
         public bool IsPiece(Vector2Int pos)
         {
-            return piecePositions.Contains(pos);
+            return PiecePositions.Contains(pos);
         }
         
 
         public bool CanMovePieceTo(int pieceID, Vector2Int targetPos)
         {
-            Vector2Int startPos = piecePositions[pieceID];
+            Vector2Int startPos = PiecePositions[pieceID];
 
             int dx = targetPos.x - startPos.x;
             int dy = targetPos.y - startPos.y;
@@ -300,16 +300,16 @@ namespace Script
         
         public void MovePieceData(int pieceID, Vector2Int targetPos)
         {
-            Content[piecePositions[pieceID].x, piecePositions[pieceID].y] = CellType.Empty;
+            Content[PiecePositions[pieceID].x, PiecePositions[pieceID].y] = CellType.Empty;
             Content[targetPos.x, targetPos.y] = CellType.Piece;
             
-            piecePositions[pieceID] = targetPos;
+            PiecePositions[pieceID] = targetPos;
         }
         
         
         public void MovePieceData(Vector2Int originalPos, Vector2Int targetPos)
         {
-            int pieceID = piecePositions[0] == originalPos ? 0 : 1;
+            int pieceID = PiecePositions[0] == originalPos ? 0 : 1;
             
             MovePieceData(pieceID, targetPos);
         }

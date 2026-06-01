@@ -18,6 +18,8 @@ namespace Script
 
         public Vector2Int CurrentMouseGrid { get; private set; } //현재 마우스 좌표는 BoardManager에서만 계산할 것
 
+        private Camera _camera;
+
 
         void Awake()
         {
@@ -31,6 +33,7 @@ namespace Script
 
         private void Start()
         {
+            _camera = Camera.main;
             ResetBoard();
         }
 
@@ -78,7 +81,7 @@ namespace Script
         {
             Vector3 mousePoint = Input.mousePosition;
             mousePoint.z = 10f;
-            return Camera.main.ScreenToWorldPoint(mousePoint);
+            return _camera.ScreenToWorldPoint(mousePoint);
         }
 
         //좌표를 격자 번호로 변환
