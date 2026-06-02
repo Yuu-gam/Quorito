@@ -14,11 +14,17 @@ namespace Script
         private bool isDragging = false; //드래그 상태
         private bool justPicked = false; //방금 집었는지 확인
         private Vector3 originalPos;
+        private Camera _camera;
 
         private void Awake()
         {
             SpriteRenderer = GetComponent<SpriteRenderer>();
             wallData = new WallData(_wallChar);
+        }
+
+        private void Start()
+        {
+            _camera = Camera.main;
         }
 
         //벽을 클릭하면 마우스를 따라옴
@@ -43,7 +49,7 @@ namespace Script
             //마우스 좌표
             Vector3 targetPos = Input.mousePosition;
             targetPos.z = 10f;
-            Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(targetPos);
+            Vector3 worldMousePos = _camera.ScreenToWorldPoint(targetPos);
             worldMousePos += new Vector3(cellSize, cellSize, 0f);
             
             //짝수 좌표로 변환
@@ -134,7 +140,7 @@ namespace Script
             SetWorldPositionFromGrid(targetPos);
 
             BoardManager.Instance.grid.PlaceWallData(wallData, targetPos);
-            GameManager.Instance.EndTurn();
+            _ = GameManager.Instance.EndTurn();
         }
 
         public void SetWorldPositionFromGrid(Vector2Int gridPos)

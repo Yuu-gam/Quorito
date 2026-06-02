@@ -41,14 +41,14 @@ namespace Script
         {
             foreach(var player in GameManager.Instance.players)
             {
-                grid.Content[player.currentGridPos.x, player.currentGridPos.y] = GridData.CellType.Piece;
+                grid.content[player.currentGridPos.x + player.currentGridPos.y * GridData.DataSize] = GridData.CellType.Piece;
             }
         }
 
 
         private void Update()
         {
-            int id = GameManager.Instance.currentTurnID;
+            int id = GameManager.Instance.CurrentTurnID;
             PlayerPiece player = GameManager.Instance.players[id];
 
             Vector2 mousePos = GetMousePos();
@@ -65,7 +65,7 @@ namespace Script
             if (Input.GetMouseButtonDown(0))
             {
 
-                if (CurrentMouseGrid == player.currentGridPos)
+                if (CurrentMouseGrid == player.currentGridPos && player.controllable)
                 {
                     player.PickUp();
                     GameManager.Instance.selectedPiece = player;
@@ -129,7 +129,7 @@ namespace Script
             GameManager.Instance.players[pieceID].currentGridPos = targetPos;
 
             GameManager.Instance.selectedPiece = null;
-            GameManager.Instance.EndTurn();
+            _ = GameManager.Instance.EndTurn();
             //Debug.Log($"말 설치 : x({targetGrid.x}), y({targetGrid.y})");
         }
 

@@ -19,7 +19,7 @@ namespace Script
 
         public enum CellType { Empty, Wall, Piece }
         
-        public CellType[,] Content;
+        public CellType[] content;
 
         public List<char> unplacedWalls = new() { 'F', 'I', 'L', 'N', 'P', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
         public List<char> placedWalls = new();
@@ -50,14 +50,11 @@ namespace Script
 
         public void ResetGrid()
         {
-            Content = new CellType[DataSize, DataSize];
+            content = new CellType[DataSize * DataSize];
             
-            for (int i = 0; i < DataSize; i++)
+            for (int i = 0; i < DataSize * DataSize; i++)
             {
-                for (int j = 0; j < DataSize; j++)
-                {
-                    Content[i, j] = CellType.Empty;
-                }
+                content[i] = CellType.Empty;
             }
         }
         
@@ -75,7 +72,7 @@ namespace Script
                 }
 
                 // 이미 벽이 있으면 설치 불가
-                if (Content[target.x, target.y] == CellType.Wall)
+                if (content[target.x + target.y * DataSize] == CellType.Wall)
                 {
                     //Debug.Log("이미 벽이 있음");
                     return false;
@@ -95,7 +92,7 @@ namespace Script
                 if(0 <= targetX && targetX < DataSize &&
                    0 <= targetY && targetY < DataSize)
                 {
-                    Content[targetX, targetY] = CellType.Wall;
+                    content[targetX + targetY * DataSize] = CellType.Wall;
                     //Debug.Log($"Place wall at [{targetX}, {targetY}]");
                 }            
             }
@@ -111,7 +108,7 @@ namespace Script
             var offsets = wallToTest.OccupiedOffsets;
             foreach (var offset in offsets)
             {
-                Content[basePos.x + offset.x, basePos.y + offset.y] = CellType.Wall;
+                content[basePos.x + offset.x + (basePos.y + offset.y) * DataSize] = CellType.Wall;
             }
 
             bool p0CanGo = CanReachGoal(0);
@@ -119,7 +116,7 @@ namespace Script
 
             foreach(var offset in offsets)
             {
-                Content[basePos.x + offset.x, basePos.y + offset.y] = CellType.Empty;
+                content[basePos.x + offset.x + (basePos.y + offset.y) * DataSize] = CellType.Empty;
             }
 
             //Debug.Log($"p1: {p0CanGo}, p2: {p1CanGo}");
@@ -155,7 +152,7 @@ namespace Script
 
                     if (next.x >= 0 && next.x < DataSize && next.y >= 0 && next.y < DataSize)
                     {
-                        if (!visited[next.x + next.y * DataSize] && Content[wall.x, wall.y] != CellType.Wall)
+                        if (!visited[next.x + next.y * DataSize] && content[wall.x + wall.y * DataSize] != CellType.Wall)
                         {
                             visited[next.x + next.y * DataSize] = true;
                             queue.Enqueue(next);
@@ -179,7 +176,7 @@ namespace Script
                 if(0 <= targetX && targetX < DataSize &&
                    0 <= targetY && targetY < DataSize)
                 {
-                    Content[targetX, targetY] = CellType.Empty;
+                    content[targetX + targetY * DataSize] = CellType.Empty;
                     //Debug.Log($"Remove wall at [{targetX}, {targetY}]");
                 }            
             }
@@ -194,7 +191,7 @@ namespace Script
         {
             if (pos.x < 0 || pos.y < 0 || pos.x >= DataSize || pos.y >= DataSize) return true;
 
-            return Content[pos.x, pos.y] == CellType.Wall;
+            return content[pos.x + pos.y * DataSize] == CellType.Wall;
         }
         
         
@@ -222,7 +219,7 @@ namespace Script
 
 
             //목표에 말이 있다면 이동 불가
-            if (Content[targetPos.x, targetPos.y] == CellType.Piece)
+            if (content[targetPos.x + targetPos.y * DataSize] == CellType.Piece)
             {
                 //Debug.Log("경로에 이미 말이 있음");
                 return false;
@@ -243,7 +240,7 @@ namespace Script
             {
                 Vector2Int opponentPos = (startPos + targetPos) / 2;
 
-                if (Content[opponentPos.x, opponentPos.y] == CellType.Piece)
+                if (content[opponentPos.x + opponentPos.y * DataSize] == CellType.Piece)
                 {
                     Vector2Int wall1 = (startPos + opponentPos) / 2; //나와 적 사이의 벽
                     Vector2Int wall2 = (targetPos + opponentPos) / 2; //적과 도착 지점 사이의 벽
@@ -300,8 +297,8 @@ namespace Script
         
         public void MovePieceData(int pieceID, Vector2Int targetPos)
         {
-            Content[PiecePositions[pieceID].x, PiecePositions[pieceID].y] = CellType.Empty;
-            Content[targetPos.x, targetPos.y] = CellType.Piece;
+            content[PiecePositions[pieceID].x + PiecePositions[pieceID].y * DataSize] = CellType.Empty;
+            content[targetPos.x + targetPos.y * DataSize] = CellType.Piece;
             
             PiecePositions[pieceID] = targetPos;
         }

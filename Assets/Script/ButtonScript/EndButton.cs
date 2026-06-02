@@ -47,8 +47,6 @@ public class EndButton : MonoBehaviour
         isPressed = false;
         ResetToNormalState();
 
-        //유니티 에디터 내에서 종료
-        UnityEditor.EditorApplication.isPlaying = false;
         //실제 프로그램 종료
         Application.Quit();
     }

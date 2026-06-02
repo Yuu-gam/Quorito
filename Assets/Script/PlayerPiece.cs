@@ -9,6 +9,9 @@ namespace Script
         public int targetY; //승리 지점
         public Vector2Int currentGridPos; //현재 위치
 
+        [Header("AI")]
+        [SerializeField] public bool controllable;
+        
         private SpriteRenderer SpriteRenderer;
         private Vector3 originalPos;
         private Vector2Int startGrid;
@@ -22,6 +25,7 @@ namespace Script
 
         private void Update()
         {
+            if (!controllable) isDragging = false;
             if (!isDragging) return;
 
             Vector2Int snapGrid = BoardManager.Instance.CurrentMouseGrid;
@@ -71,15 +75,15 @@ namespace Script
 
         public void PickUp()
         {
-            if (!isDragging)
-            {
-                isDragging = true;
-                originalPos = transform.position;
-                startGrid = BoardManager.Instance.WorldToGrid(originalPos);
+            if (!controllable) return;
+            if (isDragging) return;
+            
+            isDragging = true;
+            originalPos = transform.position;
+            startGrid = BoardManager.Instance.WorldToGrid(originalPos);
 
-                GameManager.Instance.selectedPiece = this;
-                //Debug.Log($"말 클릭: {startGrid}");
-            }
+            GameManager.Instance.selectedPiece = this;
+            //Debug.Log($"말 클릭: {startGrid}");
         }
 
         public void OnPiecePlace(Vector2Int targetPos)
@@ -89,9 +93,6 @@ namespace Script
                 CancelDragging();
                 return;
             }
-
-            //dataSize에서 말은 홀수 좌표
-            if (targetPos.x % 2 == 0 || targetPos.y % 2 == 0) return;
             
             BoardManager.Instance.MovePieceTo(playerID, targetPos);
 

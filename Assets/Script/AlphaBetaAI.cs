@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Script
 {
-    public class MoveData
+    public abstract class MoveData
     {
         public Vector2Int TargetPosition;
+
+        public abstract MoveData Clone();
     }
 
     public class PieceMoveData : MoveData
@@ -20,6 +22,11 @@ namespace Script
 
             TargetPosition = targetPosition;
             OriginalPosition = originalPosition;
+        }
+
+        public override MoveData Clone()
+        {
+            return new PieceMoveData(OriginalPosition, TargetPosition);
         }
     }
 
@@ -34,15 +41,24 @@ namespace Script
             TargetPosition = targetPosition;
             WallData = wallData;
         }
+
+        public override MoveData Clone()
+        {
+            return new WallMoveData(WallData, TargetPosition);
+        }
     }
 
     public class AlphaBetaAI : MonoBehaviour
     {
+        [Header("Settings")]
         [SerializeField] public int maxDepth = 3;
-        
-        // 0: 로그 없음, 1: 평가한 경우의 수 출력, 2: 평가한 경우들의 점수 텍스트 파일에 작성
-        [SerializeField, UnityEngine.Range(0, 2)] private int logVerbosity;
         [SerializeField] private int evalLimit = 10000;
+        
+        [Header("Debug")]
+        [SerializeField] private bool enableLogging;
+        [SerializeField] private bool logEvalResults;
+        [SerializeField] private bool logBestMove;
+        [SerializeField] private bool writeScores;
         
         private List<Vector2Int> _optimalPath0 = new(); // 플레이어 0의 최적 경로
         private List<Vector2Int> _optimalPath1 = new(); // 플레이어 1의 최적 경로
@@ -59,11 +75,17 @@ namespace Script
         private const int Down = 4;
         private const int Start = 5;
         
-        private readonly Vector2Int[] _dirs =
+        private static readonly Vector2Int[] Dirs =
         {
             Vector2Int.zero, Vector2Int.up * 2, Vector2Int.left * 2,
             Vector2Int.right * 2, Vector2Int.down * 2, Vector2Int.one,
         };
+
+        private static readonly Vector2Int[] MoveDirs = {
+            Dirs[Up], Dirs[Down], Dirs[Left], Dirs[Right],
+            Dirs[Up] * 2, Dirs[Down] * 2, Dirs[Left] * 2, Dirs[Right] * 2,
+            new(2, 2), new(2, -2), new(-2, 2), new(-2, -2)
+        }; 
         
         private int _evaluatedMoves;
         private List<int> _scores = new();
@@ -89,13 +111,13 @@ namespace Script
                 //상좌우하 탐색
                 for (short i = 1; i <= 4; i++)
                 {
-                    Vector2Int dir = _dirs[i];
+                    Vector2Int dir = Dirs[i];
                     Vector2Int next = currentPos + dir; //이동 경로
                     Vector2Int wall = currentPos + (dir / 2); //이동 경로의 벽 좌표
 
                     if (next.x < 0 || next.x >= GridData.DataSize || next.y < 0 || next.y >= GridData.DataSize) continue;
                     if (cameFrom[next.x + next.y * GridData.DataSize] != Zero) continue;
-                    if (_grid.Content[wall.x, wall.y] == GridData.CellType.Wall) continue;
+                    if (_grid.content[wall.x + wall.y * GridData.DataSize] == GridData.CellType.Wall) continue;
                     cameFrom[next.x + next.y * GridData.DataSize] = (short)(5 - i);
                     queue.Enqueue(next);
                 }
@@ -106,7 +128,7 @@ namespace Script
             while (cameFrom[currentPos.x + currentPos.y * GridData.DataSize] != Start)
             {
                 path.Add(currentPos);
-                currentPos += _dirs[cameFrom[currentPos.x + currentPos.y * GridData.DataSize]];
+                currentPos += Dirs[cameFrom[currentPos.x + currentPos.y * GridData.DataSize]];
             }
             
             return path.Count;
@@ -120,24 +142,67 @@ namespace Script
             int score = dist1 - dist0; // 플레이어 0이 유리할수록 점수가 높음
 
             _evaluatedMoves++;
-            _scores.Add(score);
+            if (writeScores) _scores.Add(score);
             return score;
         }
-
-        private void LogResult(int eval)
+        
+        
+        public void LogResult(int eval, MoveData bestMove)
         {
-            Debug.Log($"Minimax ended with {_evaluatedMoves} evaluated moves\neval: {eval}");
-
-            if (logVerbosity < 2) return;
-            if (!Directory.Exists("Assets/Log")) //Log폴더 확인 후 생성
-            {
-                Directory.CreateDirectory("Assets/Log");
-            }
+            if (!enableLogging) return;
             
-            var sw = new StreamWriter("Assets/Log/scores.txt");
-            sw.WriteLine(string.Join(", ",  _scores));
-            sw.Flush();
-            sw.Close();
+            if (logEvalResults)
+                Debug.Log($"Minimax ended with {_evaluatedMoves} evaluated moves\neval: {eval}");
+
+            if (logBestMove)
+            {
+                switch (bestMove)
+                {
+                    case PieceMoveData pieceMove:
+                        Debug.Log($"Move player at ({pieceMove.OriginalPosition}) to ({pieceMove.TargetPosition})");
+                        break;
+                    case WallMoveData wallMove:
+                        Debug.Log($"Place wall '{wallMove.WallData.pieceChar}-{wallMove.WallData.Rotation}' at  ({wallMove.TargetPosition})");
+                        break;
+                    case null:
+                        Debug.Log("Error: bestMove is null");
+                        break;
+                    default:
+                        Debug.Log($"Error: Invalid move");
+                        break;
+                }
+            }
+
+            if (writeScores)
+            {
+                if (!Directory.Exists("Assets/Log")) //Log폴더 확인 후 생성
+                {
+                    Directory.CreateDirectory("Assets/Log");
+                }
+
+                var sw = new StreamWriter("Assets/Log/scores.txt");
+                sw.WriteLine(string.Join(", ", _scores));
+                sw.Flush();
+                sw.Close();
+            }
+        }
+
+        public struct AlphaBetaResult
+        {
+            public int Eval;
+            public MoveData BestMove;
+
+            public AlphaBetaResult(int eval)
+            {
+                Eval = eval;
+                BestMove = null;
+            }
+
+            public AlphaBetaResult(int eval, MoveData bestMove)
+            {
+                Eval = eval;
+                BestMove = bestMove;
+            }
         }
 
         public int AlphaBeta(int alpha, int beta, int maximizingPlayer, int depth, out MoveData bestMove)
@@ -173,11 +238,6 @@ namespace Script
                     if (beta <= alpha)
                         break; // 베타 컷오프
                 }
-
-                if (depth == maxDepth && logVerbosity >= 1)
-                {
-                    LogResult(maxEval);
-                }
                 return maxEval;
             }
 
@@ -195,10 +255,6 @@ namespace Script
                 beta = Mathf.Min(beta, eval);
                 if (beta <= alpha)
                     break; // 알파 컷오프
-            }
-            if (depth == maxDepth && logVerbosity >= 1)
-            {
-                LogResult(minEval);
             }
             return minEval;
         }
@@ -236,23 +292,18 @@ namespace Script
             List<MoveData> moves = new();
 
             // Get possible piece move
-            Vector2Int[] posOffsetCandidates =
-            {
-                _dirs[Up], _dirs[Down], _dirs[Left], _dirs[Right],
-                _dirs[Up] * 2, _dirs[Down] * 2, _dirs[Left] * 2, _dirs[Right] * 2,
-                new(2, 2), new(2, -2), new(-2, 2), new(-2, -2)
-            };
+            
 
             var currentPos = _grid.PiecePositions[playerID];
             
-            foreach (var offset in posOffsetCandidates)
+            foreach (var offset in MoveDirs)
             {
                 var targetPos = currentPos + offset;
                 if (_grid.CanMovePieceTo(playerID, targetPos))
                     moves.Add(new PieceMoveData(currentPos, targetPos));
             }
 
-            List<WallData> wallCandidates = new();
+            List<WallData> wallCandidates = new(41);
 
             foreach (var wallChar in _grid.unplacedWalls)
             {
@@ -284,7 +335,7 @@ namespace Script
                         if (_grid.CanPlaceWall(wallData, new Vector2Int(x, y)))
                             moves.Add(new WallMoveData(wallData,  new Vector2Int(x, y)));
                         
-                        if (moves.Count > evalLimit)
+                        if (moves.Count > evalLimit && evalLimit > 0)
                             return moves;
                     }
                 }
