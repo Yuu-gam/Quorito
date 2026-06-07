@@ -1106,8 +1106,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Script.AlphaBetaAI
   maxDepth: 2
-  evalLimit: -1
-  enableLogging: 1
+  evalLimit: 200
+  enableLogging: 0
   logEvalResults: 1
   logBestMove: 0
   writeScores: 0
