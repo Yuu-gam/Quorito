@@ -137,6 +137,10 @@ namespace Script
         //벽을 설치할 수 있는지 판단
         public bool CanPlaceWall(WallData wallData, Vector2Int basePos)
         {
+            if (GameManager.Instance.CurrentTurnID != 0)
+            {
+                return false;
+            }
             return grid.CanPlaceWall(wallData, basePos);
         }
 
