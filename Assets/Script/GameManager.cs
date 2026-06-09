@@ -1,9 +1,11 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 namespace Script
 {
@@ -15,10 +17,19 @@ namespace Script
         public PlayerPiece[] players = new PlayerPiece[2];
         public PlayerPiece selectedPiece;
 
-        
+
+        private int _turnCount = 0;
         [Header("Game State")]
-        public int turnCount = 0;
-        public int CurrentTurnID => turnCount % 2;
+        public int TurnCount
+        {
+            get => _turnCount;
+            set
+            {
+                _turnCount = value;
+                UpdateStatusMessage();
+            }
+        }
+        public int CurrentTurnID => TurnCount % 2;
 
         [SerializeField] private TMP_Text text;
 
@@ -27,31 +38,41 @@ namespace Script
         [SerializeField] private AlphaBetaAI ai;
 
 
-        public bool isCalculating;
+        private bool _isCalculating;
+
+        public bool IsCalculating
+        {
+            get => _isCalculating;
+            set
+            {
+                _isCalculating = value;
+                UpdateStatusMessage();
+            }
+        }
         private bool _isGameEnded = false;
 
         void Awake()
         {
             Instance = this;
+            UpdateStatusMessage();
         }
 
-        void Update()
+        void UpdateStatusMessage()
         {
-            string calculatingMessage = isCalculating ? "(...)" : "";
+            string calculatingMessage = IsCalculating ? "(...)" : "";
             if(CurrentTurnID == 0){
-                text.text = $"Turn : {turnCount}\n<color=#FF6B6B>Player {CurrentTurnID+1} {calculatingMessage}</color>";    
+                text.text = $"Turn : {TurnCount}\n<color=#FF6B6B>Player {CurrentTurnID+1} {calculatingMessage}</color>";  
             }else{
-                text.text = $"Turn : {turnCount}\n<color=#4CAF50>Player {CurrentTurnID+1} {calculatingMessage}</color>";
+                text.text = $"Turn : {TurnCount}\n<color=#4CAF50>Player {CurrentTurnID+1} {calculatingMessage}</color>";
             }
         }
-        
 
         //턴 변경
         public async Task EndTurn()
         {
-            isCalculating = true;
+            IsCalculating = true;
             
-            turnCount++;
+            TurnCount++;
             //Debug.Log($"턴 수:{turnCount}, 현재: Player{currentTurnID + 1}");
             
             // AI
@@ -77,7 +98,7 @@ namespace Script
                 //Debug.Log($"Place wall '{wallMove.WallData.pieceChar}-{wallMove.WallData.Rotation}' at  ({wallMove.TargetPosition})"); 
             }
             
-            isCalculating = false;
+            IsCalculating = false;
         }
 
 
