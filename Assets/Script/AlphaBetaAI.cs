@@ -1,58 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace Script
 {
-    public abstract class MoveData
-    {
-        public Vector2Int TargetPosition;
-
-        public abstract MoveData Clone();
-    }
-
-    public class PieceMoveData : MoveData
-    {
-        public Vector2Int OriginalPosition;
-
-        public PieceMoveData(Vector2Int originalPosition, Vector2Int targetPosition)
-        {
-            Assert.IsTrue(targetPosition.x % 2 == 1 || targetPosition.y % 2 == 1);
-
-            TargetPosition = targetPosition;
-            OriginalPosition = originalPosition;
-        }
-
-        public override MoveData Clone()
-        {
-            return new PieceMoveData(OriginalPosition, TargetPosition);
-        }
-    }
-
-    public class WallMoveData : MoveData
-    {
-        public WallData WallData;
-
-        public WallMoveData(WallData wallData, Vector2Int targetPosition)
-        {
-            Assert.IsTrue(targetPosition.x % 2 == 0 || targetPosition.y % 2 == 0);
-            
-            TargetPosition = targetPosition;
-            WallData = wallData;
-        }
-
-        public override MoveData Clone()
-        {
-            return new WallMoveData(WallData, TargetPosition);
-        }
-    }
-
     public class AlphaBetaAI : MonoBehaviour
     {
         [Header("Settings")]
-        [SerializeField] public int maxDepth = 3;
-        [SerializeField] private int evalLimit = 10000;
+        [SerializeField] public int maxDepth = 2;
+        [SerializeField] private int evalLimit = 200;
         
         [Header("Debug")]
         [SerializeField] private bool enableLogging;
@@ -91,7 +47,7 @@ namespace Script
         private List<int> _scores = new();
         
         // Return: path length
-        private int BFS(int pieceID, out List<Vector2Int> path)
+        private int FindShortestPath(int pieceID, out List<Vector2Int> path)
         {
             short[] cameFrom = new short[GridData.DataSize * GridData.DataSize];
             Queue<Vector2Int> queue = new Queue<Vector2Int>();
@@ -137,8 +93,8 @@ namespace Script
         public int EvaluateBoard()
         {
             // 현재 보드 상태를 평가하여 점수 반환
-            int dist0 = BFS(0, out _);
-            int dist1 = BFS(1, out _);
+            int dist0 = FindShortestPath(0, out _);
+            int dist1 = FindShortestPath(1, out _);
             int score = dist1 - dist0; // 플레이어 0이 유리할수록 점수가 높음
 
             _evaluatedMoves++;
