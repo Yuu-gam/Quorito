@@ -145,7 +145,7 @@ namespace Script
         }
 
 
-        public WallPiece FindWallPiece(char wallChar)
+        public WallPiece FindWallPiece(byte wallChar)
         {
             var wallPieces = FindObjectsByType<WallPiece>(FindObjectsSortMode.None);
             foreach (var wall in wallPieces)

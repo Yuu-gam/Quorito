@@ -21,8 +21,13 @@ namespace Script
         
         public CellType[] content;
 
-        public List<char> unplacedWalls = new() { 'F', 'I', 'L', 'N', 'P', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
-        public List<char> placedWalls = new();
+        public List<byte> unplacedWalls = new()
+        {
+            (byte)'F', (byte)'I', (byte)'L', (byte)'N', 
+            (byte)'P', (byte)'T', (byte)'U', (byte)'V', 
+            (byte)'W', (byte)'X', (byte)'Y', (byte)'Z'
+        };
+        public List<byte> placedWalls = new();
 
         public static readonly int[] TargetYs = { 19, 1 };
 

@@ -8,7 +8,7 @@ namespace Script
 	[Serializable]
 	public class WallData
 	{
-		public char pieceChar;
+		public byte pieceChar;
 		[SerializeField] private Vector2Int[] _occupiedOffsets;
 		public Vector2Int[] OccupiedOffsets // 벽이 보드에서 차지하는 좌표
 		{
@@ -30,20 +30,20 @@ namespace Script
 			set => _occupiedOffsets = value;
 		}
 
-		private static readonly Dictionary<char, Vector2Int[]> BaseOffsets = new()
+		private static readonly Dictionary<byte, Vector2Int[]> BaseOffsets = new()
 		{
-			{'F', new Vector2Int[] { new(-1, 0), new(0, -1), new(0, 1), new(1, 2) }},
-			{'I', new Vector2Int[] { new(0, 1), new(0, 3), new(0, -1), new(0, -3) }},
-			{'L', new Vector2Int[] { new(1, 0), new(0, 1), new(0, 3), new(0, 5) }},
-			{'N', new Vector2Int[] { new(0, -1), new(0, -3), new(1, 0), new(2, 1) }},
-			{'P', new Vector2Int[] { new(1, 0), new(1, 2), new(0, 1), new(0, -1), new(2, 1) }},
-			{'T', new Vector2Int[] { new(0, -1), new(0, 1), new(-1, 2), new(1, 2) }},
-			{'U', new Vector2Int[] { new(-1, 0), new(-2, 1), new(1, 0), new(2, 1) }},
-			{'V', new Vector2Int[] { new(1, 0), new(3, 0), new(0, 1), new(0, 3) }},
-			{'W', new Vector2Int[] { new(-1, 0), new(-2, 1), new(0, -1), new(1, -2) }},
-			{'X', new Vector2Int[] { new(1, 0), new(-1, 0), new(0, 1), new(0, -1) }},
-			{'Y', new Vector2Int[] { new(-1, 0), new(0, 1), new(0, -1), new(0, -3) }},
-			{'Z', new Vector2Int[] { new(-1, 2), new(0, 1), new(0, -1), new(1, -2) }}
+			{(byte)'F', new Vector2Int[] { new(-1, 0), new(0, -1), new(0, 1), new(1, 2) }},
+			{(byte)'I', new Vector2Int[] { new(0, 1), new(0, 3), new(0, -1), new(0, -3) }},
+			{(byte)'L', new Vector2Int[] { new(1, 0), new(0, 1), new(0, 3), new(0, 5) }},
+			{(byte)'N', new Vector2Int[] { new(0, -1), new(0, -3), new(1, 0), new(2, 1) }},
+			{(byte)'P', new Vector2Int[] { new(1, 0), new(1, 2), new(0, 1), new(0, -1), new(2, 1) }},
+			{(byte)'T', new Vector2Int[] { new(0, -1), new(0, 1), new(-1, 2), new(1, 2) }},
+			{(byte)'U', new Vector2Int[] { new(-1, 0), new(-2, 1), new(1, 0), new(2, 1) }},
+			{(byte)'V', new Vector2Int[] { new(1, 0), new(3, 0), new(0, 1), new(0, 3) }},
+			{(byte)'W', new Vector2Int[] { new(-1, 0), new(-2, 1), new(0, -1), new(1, -2) }},
+			{(byte)'X', new Vector2Int[] { new(1, 0), new(-1, 0), new(0, 1), new(0, -1) }},
+			{(byte)'Y', new Vector2Int[] { new(-1, 0), new(0, 1), new(0, -1), new(0, -3) }},
+			{(byte)'Z', new Vector2Int[] { new(-1, 2), new(0, 1), new(0, -1), new(1, -2) }}
 		};
 		
 		private int _rotation;
@@ -59,7 +59,7 @@ namespace Script
 			Rotation += amount;
 		}
 		
-		public WallData(char pieceChar, int rotation = 0)
+		public WallData(byte pieceChar, int rotation = 0)
 		{
 			this.pieceChar = pieceChar;
 			OccupiedOffsets = BaseOffsets[pieceChar].Clone() as Vector2Int[];

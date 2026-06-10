@@ -9,6 +9,8 @@ namespace Script
         private SpriteRenderer SpriteRenderer;
 
         [SerializeField] private char _wallChar;
+        private byte _wallByte;
+        
         [HideInInspector] public WallData wallData;
         private bool isPlaced = false; //설치 상태
         private bool isDragging = false; //드래그 상태
@@ -18,8 +20,9 @@ namespace Script
 
         private void Awake()
         {
+            _wallByte = (byte)_wallChar;
             SpriteRenderer = GetComponent<SpriteRenderer>();
-            wallData = new WallData(_wallChar);
+            wallData = new WallData(_wallByte);
         }
 
         private void Start()

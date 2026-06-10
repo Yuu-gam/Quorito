@@ -309,10 +309,10 @@ namespace Script
             {
                 switch (wallChar)
                 {
-                    case 'X':
+                    case (byte)'X':
                         wallCandidates.Add(new WallData(wallChar));
                         break;
-                    case 'I': case 'Z':
+                    case (byte)'I': case (byte)'Z':
                         wallCandidates.Add(new WallData(wallChar));
                         wallCandidates.Add(new WallData(wallChar, 1));
                         break;
