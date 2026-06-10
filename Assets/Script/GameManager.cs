@@ -73,7 +73,7 @@ namespace Script
             IsCalculating = true;
             
             TurnCount++;
-            //Debug.Log($"턴 수:{turnCount}, 현재: Player{currentTurnID + 1}");
+            Debug.Log($"턴 수:{TurnCount}, 현재: Player{CurrentTurnID + 1}");
             
             // AI
             if (CurrentTurnID == 0) return;
@@ -85,7 +85,7 @@ namespace Script
             if (bestMove is PieceMoveData pieceMove)
             {
                 players[CurrentTurnID].OnPiecePlace(pieceMove.TargetPosition);
-                //Debug.Log($"Move player at ({pieceMove.OriginalPosition}) to ({pieceMove.TargetPosition})"); 
+                Debug.Log($"Move player at ({pieceMove.OriginalPosition}) to ({pieceMove.TargetPosition})"); 
             }
             else if (bestMove is WallMoveData wallMove)
             {
@@ -95,7 +95,7 @@ namespace Script
                     wallPiece.wallData = wallMove.WallData;
                     wallPiece.PlaceWall(wallMove.TargetPosition);
                 }
-                //Debug.Log($"Place wall '{wallMove.WallData.pieceChar}-{wallMove.WallData.Rotation}' at  ({wallMove.TargetPosition})"); 
+                Debug.Log($"Place wall '{wallMove.WallData.pieceChar}-{wallMove.WallData.Rotation}' at  ({wallMove.TargetPosition})"); 
             }
             
             IsCalculating = false;
