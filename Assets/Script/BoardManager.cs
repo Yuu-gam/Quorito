@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Script
 {
@@ -74,6 +75,11 @@ namespace Script
                 }
                 
                 GameManager.Instance.selectedPiece?.OnPiecePlace(CurrentMouseGrid);
+            }
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                SceneManager.LoadScene("GameMain");
             }
         }
 
